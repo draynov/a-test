@@ -65,10 +65,33 @@ export async function POST(request: Request) {
       if (error.code === "P2002") {
         return NextResponse.json({ error: "Потребител с този email вече съществува." }, { status: 409 });
       }
+
+      return NextResponse.json(
+        {
+          error: "Prisma грешка при регистрация.",
+          code: error.code,
+          details: error.message,
+        },
+        { status: 500 },
+      );
+    }
+
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return NextResponse.json(
+        {
+          error: "Грешка при връзка с базата.",
+          code: error.errorCode ?? "INIT_ERROR",
+          details: error.message,
+        },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
-      { error: "Регистрацията е неуспешна. Провери Database URL и SQL таблиците в Supabase." },
+      {
+        error: "Регистрацията е неуспешна. Провери Database URL и SQL таблиците в Supabase.",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
