@@ -1,23 +1,36 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
+  createEmptyAttestationCardForm,
   educationOptions,
   type AttestationCardFormData,
   type AttestationCardRecord,
 } from "@/lib/attestation-card";
 
 type Props = {
-  card: AttestationCardRecord;
+  card?: AttestationCardRecord;
+  mode: "create" | "edit";
 };
 
-export default function AttestationCardEditor({ card }: Props) {
-  const [form, setForm] = useState<AttestationCardFormData>({
-    firstInitial: card.firstInitial,
-    otherAfterInitial: card.otherAfterInitial ?? "",
+export default function AttestationCardEditor({ card, mode }: Props) {
+  const router = useRouter();
+  const [form, setForm] = useState<AttestationCardFormData>(() => {
+    if (card) {
+      return {
+        firstInitial: card.firstInitial,
+        otherAfterInitial: card.otherAfterInitial ?? "",
+      };
+    }
+
+    return createEmptyAttestationCardForm();
   });
-  const [status, setStatus] = useState("Редактирай и запази промените.");
+  const [status, setStatus] = useState(
+    mode === "create" ? "Попълни Раздел А и създай нова карта." : "Редактирай и запази промените.",
+  );
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,8 +46,11 @@ export default function AttestationCardEditor({ card }: Props) {
       setIsSaving(true);
       setError("");
 
-      const response = await fetch(`/api/attestation-cards/${card.id}`, {
-        method: "PUT",
+      const url = mode === "create" ? "/api/attestation-cards" : `/api/attestation-cards/${card?.id ?? ""}`;
+      const method = mode === "create" ? "POST" : "PUT";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,6 +60,14 @@ export default function AttestationCardEditor({ card }: Props) {
       if (!response.ok) {
         const payload = (await response.json()) as { error?: string };
         throw new Error(payload.error ?? "Неуспешно записване.");
+      }
+
+      if (mode === "create") {
+        const payload = (await response.json()) as { card: AttestationCardRecord };
+        setStatus("Картата е създадена успешно.");
+        router.push(`/app/attestirane/karti/${payload.card.id}`);
+        router.refresh();
+        return;
       }
 
       setStatus("Промените са запазени.");
@@ -58,6 +82,14 @@ export default function AttestationCardEditor({ card }: Props) {
   return (
     <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
       <div className="border-b border-slate-100 px-6 py-5">
+        <div className="mb-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700"
+          >
+            Раздел А
+          </button>
+        </div>
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Раздел А</p>
         <h2 className="mt-1 text-2xl font-semibold text-slate-950">1. Образование</h2>
       </div>
@@ -117,13 +149,23 @@ export default function AttestationCardEditor({ card }: Props) {
 
         <div className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">{status}</p>
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
-          >
-            {isSaving ? "Записване..." : "Запази промените"}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {mode === "create" ? (
+              <Link
+                href="/app/attestirane/karti"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
+              >
+                Отказ
+              </Link>
+            ) : null}
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+            >
+              {isSaving ? "Записване..." : mode === "create" ? "Създай карта" : "Запази промените"}
+            </button>
+          </div>
         </div>
       </form>
     </section>

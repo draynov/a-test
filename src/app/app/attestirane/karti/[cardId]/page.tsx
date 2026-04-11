@@ -42,7 +42,7 @@ export default async function AttestationCardDetailsPage({ params }: Props) {
         <p className="mt-2 text-sm text-slate-600">Карта ID: {card.id}</p>
       </header>
 
-      <AttestationCardEditor card={editableCard} />
+      <AttestationCardEditor card={editableCard} mode="edit" />
 
       <div className="flex flex-wrap gap-3">
         <Link

@@ -11,7 +11,6 @@ export default function AttestationCardDashboard() {
   const [status, setStatus] = useState("Зареждане на картите...");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     void loadCards();
@@ -36,34 +35,6 @@ export default function AttestationCardDashboard() {
       setStatus("Грешка при зареждането.");
     } finally {
       setIsLoading(false);
-    }
-  }
-
-  async function handleCreate() {
-    try {
-      setIsCreating(true);
-      setError("");
-      const response = await fetch("/api/attestation-cards", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json()) as { error?: string };
-        throw new Error(payload.error ?? "Неуспешно създаване на карта.");
-      }
-
-      const payload = (await response.json()) as { card: AttestationCardRecord };
-      setCards((current) => [payload.card, ...current]);
-      setStatus(`Създадена е карта ${payload.card.id}.`);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неочаквана грешка.";
-      setError(message);
-    } finally {
-      setIsCreating(false);
     }
   }
 
@@ -98,14 +69,12 @@ export default function AttestationCardDashboard() {
         <p className="mt-2 text-sm text-slate-600">Списък с карти. Засега се виждат само ID и дата.</p>
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={handleCreate}
-            disabled={isCreating}
-            className="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+          <Link
+            href="/app/attestirane/karti/nova"
+            className="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
           >
-            {isCreating ? "Създаване..." : "Нова карта"}
-          </button>
+            Нова карта
+          </Link>
           <button
             type="button"
             onClick={() => void loadCards()}
