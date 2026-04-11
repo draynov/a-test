@@ -52,13 +52,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as AttestationCardFormData;
+  const rawBody = await request.text();
+  const body = rawBody ? (JSON.parse(rawBody) as Partial<AttestationCardFormData>) : {};
 
-  if (!body.firstInitial) {
-    return NextResponse.json({ error: "Поле 1.1 е задължително." }, { status: 400 });
-  }
-
-  const firstInitial = educationLabelToDbValue(body.firstInitial as EducationLevel);
+  const firstInitialLabel = (body.firstInitial as EducationLevel | undefined) ?? "Средно образование";
+  const firstInitial = educationLabelToDbValue(firstInitialLabel);
   const otherAfterInitial = body.otherAfterInitial
     ? educationLabelToDbValue(body.otherAfterInitial as EducationLevel)
     : null;
