@@ -104,6 +104,7 @@ export default function AppShellNav() {
     <>
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-700">Система за атестиране</p>
       <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Основни раздели</h2>
+      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">Основни раздели</p>
 
       <nav className="mt-5 flex flex-col gap-2">
         {navItems.map((item) => {
