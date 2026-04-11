@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { auth } from "@/auth";
 import {
   educationDbValueToLabel,
   educationLabelToDbValue,
@@ -27,6 +28,12 @@ function serializeCard(card: {
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = (await request.json()) as AttestationCardFormData;
 
@@ -58,6 +65,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
 
   await prisma.attestationCard.delete({

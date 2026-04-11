@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { auth } from "@/auth";
 import {
   educationDbValueToLabel,
   educationLabelToDbValue,
@@ -27,6 +28,12 @@ function serializeCard(card: {
 }
 
 export async function GET() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const cards = await prisma.attestationCard.findMany({
     orderBy: {
       updatedAt: "desc",
@@ -39,6 +46,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = (await request.json()) as AttestationCardFormData;
 
   if (!body.firstInitial) {
