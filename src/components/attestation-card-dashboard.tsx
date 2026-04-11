@@ -6,6 +6,14 @@ import { useEffect, useState } from "react";
 
 import type { AttestationCardRecord } from "@/lib/attestation-card";
 
+function RefreshIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20 7h-5V2m-6 20v-5H4m1.5-3.5A8 8 0 0 1 15 4l0 3M18.5 10.5A8 8 0 0 1 9 20l0-3" />
+    </svg>
+  );
+}
+
 export default function AttestationCardDashboard() {
   const [cards, setCards] = useState<AttestationCardRecord[]>([]);
   const [status, setStatus] = useState("Зареждане на картите...");
@@ -68,22 +76,28 @@ export default function AttestationCardDashboard() {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Атестационни карти</h1>
         <p className="mt-2 text-sm text-slate-600">Списък с карти. Засега се виждат само ID и дата.</p>
 
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link
-            href="/app/attestirane/karti/nova"
-            className="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-          >
-            Нова карта
-          </Link>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-sm text-slate-500">{status}</span>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/app/attestirane/karti/nova"
+              className="inline-flex items-center bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+            >
+              Нова карта
+            </Link>
+
           <button
             type="button"
             onClick={() => void loadCards()}
             disabled={isLoading}
-            className="inline-flex items-center rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 w-10 items-center justify-center border border-slate-200 bg-white text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            aria-label="Обнови списъка"
+            title="Обнови списъка"
           >
-            Обнови списъка
+            <RefreshIcon className="h-4 w-4" />
           </button>
-          <span className="text-sm text-slate-500">{status}</span>
+          </div>
         </div>
 
         {error ? (
