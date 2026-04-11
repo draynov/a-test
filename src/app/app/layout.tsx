@@ -18,17 +18,18 @@ export default async function ProtectedAppLayout({ children }: Props) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#f8fafc_0%,_#eef2ff_36%,_#e2e8f0_100%)] text-slate-900">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-6 sm:px-6 lg:px-10">
-        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-          <AppShellNav />
+      <AppShellUserBar
+        userName={session.user.name ?? session.user.email ?? "Потребител"}
+        userRole={session.user.role ?? "USER"}
+      />
 
-          <div className="space-y-6">
-            <AppShellUserBar
-              userName={session.user.name ?? session.user.email ?? "Потребител"}
-              userRole={session.user.role ?? "USER"}
-            />
-            {children}
-          </div>
+      <div className="grid min-h-[calc(100vh-73px)] gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="border-r border-slate-200 bg-white/90 p-4 lg:p-0">
+          <AppShellNav />
+        </div>
+
+        <div className="p-4 sm:p-6 [&>main]:!max-w-none [&>main]:w-full [&>main]:px-0">
+          {children}
         </div>
       </div>
     </div>

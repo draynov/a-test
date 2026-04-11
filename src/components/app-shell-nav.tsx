@@ -115,7 +115,7 @@ export default function AppShellNav() {
               key={item.href}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+              className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold transition ${
                 isActive
                   ? "bg-slate-900 text-white"
                   : "border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-indigo-700"
@@ -136,20 +136,23 @@ export default function AppShellNav() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm"
+          className="inline-flex items-center gap-2 border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm"
         >
           <MenuIcon className="h-4 w-4" />
           Меню
         </button>
 
         {isOpen ? (
-          <div className="fixed inset-0 z-40 bg-slate-900/40 p-4">
-            <aside className="h-full w-full max-w-xs overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
+          <div className="fixed inset-0 z-40 bg-slate-900/40" onClick={() => setIsOpen(false)}>
+            <aside
+              className="h-full w-full max-w-xs overflow-hidden border-r border-slate-200 bg-white p-5 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]"
+              onClick={(event) => event.stopPropagation()}
+            >
               <div className="mb-4 flex items-center justify-end">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="inline-flex items-center rounded-full border border-slate-200 bg-white p-2 text-slate-700"
+                  className="inline-flex items-center border border-slate-200 bg-white p-2 text-slate-700"
                   aria-label="Затвори менюто"
                 >
                   <CloseIcon className="h-4 w-4" />
@@ -161,7 +164,7 @@ export default function AppShellNav() {
         ) : null}
       </div>
 
-      <aside className="hidden h-fit overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 p-5 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)] lg:sticky lg:top-6 lg:block">
+      <aside className="hidden h-full bg-white px-5 py-6 lg:block">
         {navContent}
       </aside>
     </>
