@@ -10,3 +10,20 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum EducationLevel {
+  SCHOOL
+  PROFESSIONAL_BACHELOR
+  BACHELOR
+  MASTER
+  DOCTOR
+  DOCTOR_OF_SCIENCES
+}
+
+model AttestationCard {
+  id                String         @id @default(cuid())
+  firstInitial      EducationLevel
+  otherAfterInitial EducationLevel?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
