@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import AttestationCardDashboard from "@/components/attestation-card-dashboard";
 import { auth } from "@/auth";
 
 export default async function Home() {
@@ -10,5 +9,5 @@ export default async function Home() {
     redirect("/login");
   }
 
-  return <AttestationCardDashboard />;
+  redirect("/app/attestirane/karti");
 }

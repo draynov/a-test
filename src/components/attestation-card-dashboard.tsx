@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { signOut } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -202,22 +202,15 @@ export default function AttestationCardDashboard() {
               </span>
               <div className="space-y-2">
                 <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                  Раздел А · 1. Образование
+                  Атестиране · Атестационни карти
                 </h1>
                 <p className="max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-                  База за картите с list/edit възможност. Т. 1 съдържа 1.1 Първоначална и 1.2 Друга след първоначалната.
+                  Списък и редакция на карти. Текущата имплементация включва Раздел А, т. 1 (1.1 и 1.2).
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-end">
-              <button
-                type="button"
-                onClick={() => void signOut({ callbackUrl: "/login" })}
-                className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100"
-              >
-                Изход
-              </button>
               <button
                 type="button"
                 onClick={handleNew}
@@ -400,6 +393,12 @@ export default function AttestationCardDashboard() {
                       >
                         Зареди
                       </button>
+                      <Link
+                        href={`/app/attestirane/karti/${card.id}`}
+                        className="rounded-full bg-indigo-500/15 px-3 py-2 text-xs font-semibold text-indigo-100 transition hover:bg-indigo-500/25"
+                      >
+                        Преглед
+                      </Link>
                       <button
                         type="button"
                         onClick={() => handleDelete(card.id)}
