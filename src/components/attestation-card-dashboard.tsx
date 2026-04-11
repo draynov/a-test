@@ -14,6 +14,22 @@ function RefreshIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function EditIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 20h4l10-10-4-4L4 16v4Zm9-12 4 4" />
+    </svg>
+  );
+}
+
+function TrashIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M9 7V5h6v2m-8 0 1 12h8l1-12" />
+    </svg>
+  );
+}
+
 export default function AttestationCardDashboard() {
   const [cards, setCards] = useState<AttestationCardRecord[]>([]);
   const [status, setStatus] = useState("Зареждане на картите...");
@@ -114,7 +130,7 @@ export default function AttestationCardDashboard() {
               <tr className="border-b border-slate-100 bg-slate-50/80 text-left text-xs uppercase tracking-[0.16em] text-slate-500">
                 <th className="px-6 py-4 font-semibold">ID</th>
                 <th className="px-6 py-4 font-semibold">Дата</th>
-                <th className="px-6 py-4 font-semibold">Действия</th>
+                <th className="px-6 py-4 text-right font-semibold">Действия</th>
               </tr>
             </thead>
             <tbody>
@@ -130,19 +146,23 @@ export default function AttestationCardDashboard() {
                     <td className="px-6 py-4 font-mono text-xs text-slate-700">{card.id}</td>
                     <td className="px-6 py-4">{format(new Date(card.createdAt), "dd.MM.yyyy HH:mm")}</td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap justify-end gap-2">
                         <Link
                           href={`/app/attestirane/karti/${card.id}`}
-                          className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                          className="inline-flex h-9 w-9 items-center justify-center border border-indigo-200 bg-indigo-50 text-indigo-700 transition hover:bg-indigo-100"
+                          aria-label="Редакция"
+                          title="Редакция"
                         >
-                          Редакция
+                          <EditIcon className="h-4 w-4" />
                         </Link>
                         <button
                           type="button"
                           onClick={() => void handleDelete(card.id)}
-                          className="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                          className="inline-flex h-9 w-9 items-center justify-center border border-rose-200 bg-rose-50 text-rose-700 transition hover:bg-rose-100"
+                          aria-label="Изтрий"
+                          title="Изтрий"
                         >
-                          Изтрий
+                          <TrashIcon className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
