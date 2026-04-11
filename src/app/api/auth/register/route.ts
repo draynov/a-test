@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
@@ -22,30 +23,53 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Паролата трябва да е поне 8 символа." }, { status: 400 });
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
 
-  if (existingUser) {
-    return NextResponse.json({ error: "Потребител с този email вече съществува." }, { status: 409 });
+    if (existingUser) {
+      return NextResponse.json({ error: "Потребител с този email вече съществува." }, { status: 409 });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const createdUser = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        name,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        user: {
+          id: createdUser.id,
+          email: createdUser.email,
+          name: createdUser.name,
+          role: createdUser.role,
+        },
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2021") {
+        return NextResponse.json(
+          { error: 'Липсва таблица "User" в базата. Пусни supabase-user.sql в SQL Editor.' },
+          { status: 500 },
+        );
+      }
+
+      if (error.code === "P2002") {
+        return NextResponse.json({ error: "Потребител с този email вече съществува." }, { status: 409 });
+      }
+    }
+
+    return NextResponse.json(
+      { error: "Регистрацията е неуспешна. Провери Database URL и SQL таблиците в Supabase." },
+      { status: 500 },
+    );
   }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  const createdUser = await prisma.user.create({
-    data: {
-      email,
-      passwordHash,
-      name,
-    },
-  });
-
-  return NextResponse.json({
-    user: {
-      id: createdUser.id,
-      email: createdUser.email,
-      name: createdUser.name,
-      role: createdUser.role,
-    },
-  }, { status: 201 });
 }
