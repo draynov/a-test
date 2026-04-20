@@ -406,24 +406,23 @@ export default function AttestationCardEditor({ card, mode }: Props) {
           </h3>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">5.1 Задължителна вътрешноинституционална квалификация</span>
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm text-slate-600">брой академични часове</span>
-              <input
-                type="number"
-                min={QUALIFICATION_HOURS_MIN}
-                max={QUALIFICATION_HOURS_MAX}
-                value={form.internalQualificationHours}
-                onChange={(event) => {
-                  const numericValue = Number(event.target.value);
-                  setForm((current) => ({
-                    ...current,
-                    internalQualificationHours: Number.isNaN(numericValue) ? 0 : numericValue,
-                  }));
-                }}
-                className="w-full max-w-55 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-              />
-            </div>
+            <span className="text-sm font-medium text-slate-700">
+              5.1 Задължителна вътрешноинституционална квалификация + брой академични часове
+            </span>
+            <input
+              type="number"
+              min={QUALIFICATION_HOURS_MIN}
+              max={QUALIFICATION_HOURS_MAX}
+              value={form.internalQualificationHours}
+              onChange={(event) => {
+                const numericValue = Number(event.target.value);
+                setForm((current) => ({
+                  ...current,
+                  internalQualificationHours: Number.isNaN(numericValue) ? 0 : numericValue,
+                }));
+              }}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+            />
           </label>
 
           <div className="space-y-2">
