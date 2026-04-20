@@ -20,6 +20,14 @@ enum EducationLevel {
   DOCTOR_OF_SCIENCES
 }
 
+enum ProfessionalQualification {
+  V_PKS
+  IV_PKS
+  III_PKS
+  II_PKS
+  I_PKS
+}
+
 model AttestationCard {
   id                String         @id @default(cuid())
   firstInitial      EducationLevel
@@ -27,6 +35,9 @@ model AttestationCard {
   baseSpecialty     String?        @db.VarChar(255)
   hasTeacherQualification Boolean   @default(false)
   hasAdditionalQualification Boolean @default(false)
+  latestProfessionalQualification ProfessionalQualification?
+  laborExperienceYears Int          @default(0)
+  teachingExperienceYears Int       @default(0)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }

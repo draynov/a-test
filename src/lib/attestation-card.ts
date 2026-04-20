@@ -7,7 +7,10 @@ export const educationOptions = [
   "Доктор на науките",
 ] as const;
 
+export const professionalQualificationOptions = ["V ПКС", "IV ПКС", "III ПКС", "II ПКС", "I ПКС"] as const;
+
 export type EducationLevel = (typeof educationOptions)[number];
+export type ProfessionalQualification = (typeof professionalQualificationOptions)[number];
 
 export const educationLevelToDbValue = {
   "Средно образование": "SCHOOL",
@@ -27,9 +30,28 @@ export const educationLevelFromDbValue = {
   DOCTOR_OF_SCIENCES: "Доктор на науките",
 } as const;
 
+export const professionalQualificationToDbValue = {
+  "V ПКС": "V_PKS",
+  "IV ПКС": "IV_PKS",
+  "III ПКС": "III_PKS",
+  "II ПКС": "II_PKS",
+  "I ПКС": "I_PKS",
+} as const;
+
+export const professionalQualificationFromDbValue = {
+  V_PKS: "V ПКС",
+  IV_PKS: "IV ПКС",
+  III_PKS: "III ПКС",
+  II_PKS: "II ПКС",
+  I_PKS: "I ПКС",
+} as const;
+
 export type EducationLevelDb = keyof typeof educationLevelFromDbValue;
+export type ProfessionalQualificationDb = keyof typeof professionalQualificationFromDbValue;
 
 export const BASE_SPECIALTY_MAX_LENGTH = 255;
+export const EXPERIENCE_YEARS_MIN = 0;
+export const EXPERIENCE_YEARS_MAX = 99;
 
 export type AttestationCardFormData = {
   firstInitial: EducationLevel | "";
@@ -37,6 +59,9 @@ export type AttestationCardFormData = {
   baseSpecialty: string;
   hasTeacherQualification: boolean;
   hasAdditionalQualification: boolean;
+  latestProfessionalQualification: ProfessionalQualification | "";
+  laborExperienceYears: number;
+  teachingExperienceYears: number;
 };
 
 export type AttestationCardRecord = {
@@ -46,6 +71,9 @@ export type AttestationCardRecord = {
   baseSpecialty: string | null;
   hasTeacherQualification: boolean;
   hasAdditionalQualification: boolean;
+  latestProfessionalQualification: ProfessionalQualification | null;
+  laborExperienceYears: number;
+  teachingExperienceYears: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -57,6 +85,9 @@ export function createEmptyAttestationCardForm(): AttestationCardFormData {
     baseSpecialty: "",
     hasTeacherQualification: false,
     hasAdditionalQualification: false,
+    latestProfessionalQualification: "",
+    laborExperienceYears: 0,
+    teachingExperienceYears: 0,
   };
 }
 
@@ -78,11 +109,53 @@ export function getBaseSpecialtyValidationError(value: string | null | undefined
   return null;
 }
 
+export function getProfessionalQualificationValidationError(
+  value: ProfessionalQualification | "" | null | undefined,
+): string | null {
+  if (!value) {
+    return "Поле 3 е задължително.";
+  }
+
+  return null;
+}
+
+export function parseExperienceYears(value: unknown): number {
+  const numeric = Number(value);
+
+  if (!Number.isInteger(numeric) || numeric < EXPERIENCE_YEARS_MIN || numeric > EXPERIENCE_YEARS_MAX) {
+    return NaN;
+  }
+
+  return numeric;
+}
+
+export function getExperienceYearsValidationError(label: string, value: unknown): string | null {
+  const parsedValue = parseExperienceYears(value);
+
+  if (Number.isNaN(parsedValue)) {
+    return `${label} трябва да е цяло число от 0 до 99.`;
+  }
+
+  return null;
+}
+
 export function educationLabelToDbValue(label: EducationLevel): EducationLevelDb {
   return educationLevelToDbValue[label];
 }
 
 export function educationDbValueToLabel(value: EducationLevelDb): EducationLevel {
   return educationLevelFromDbValue[value];
+}
+
+export function professionalQualificationLabelToDbValue(
+  label: ProfessionalQualification,
+): ProfessionalQualificationDb {
+  return professionalQualificationToDbValue[label];
+}
+
+export function professionalQualificationDbValueToLabel(
+  value: ProfessionalQualificationDb,
+): ProfessionalQualification {
+  return professionalQualificationFromDbValue[value];
 }
 

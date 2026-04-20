@@ -2,7 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import AttestationCardEditor from "@/components/attestation-card-editor";
-import { educationDbValueToLabel, type EducationLevelDb } from "@/lib/attestation-card";
+import {
+  educationDbValueToLabel,
+  professionalQualificationDbValueToLabel,
+  type EducationLevelDb,
+  type ProfessionalQualificationDb,
+} from "@/lib/attestation-card";
 import { prisma } from "@/lib/prisma";
 
 type Props = {
@@ -33,6 +38,11 @@ export default async function AttestationCardDetailsPage({ params }: Props) {
     baseSpecialty: card.baseSpecialty,
     hasTeacherQualification: card.hasTeacherQualification,
     hasAdditionalQualification: card.hasAdditionalQualification,
+    latestProfessionalQualification: card.latestProfessionalQualification
+      ? professionalQualificationDbValueToLabel(card.latestProfessionalQualification as ProfessionalQualificationDb)
+      : null,
+    laborExperienceYears: card.laborExperienceYears,
+    teachingExperienceYears: card.teachingExperienceYears,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };

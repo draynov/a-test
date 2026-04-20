@@ -6,9 +6,14 @@ import { useState } from "react";
 
 import {
   BASE_SPECIALTY_MAX_LENGTH,
+  EXPERIENCE_YEARS_MAX,
+  EXPERIENCE_YEARS_MIN,
   createEmptyAttestationCardForm,
   getBaseSpecialtyValidationError,
+  getExperienceYearsValidationError,
+  getProfessionalQualificationValidationError,
   educationOptions,
+  professionalQualificationOptions,
   type AttestationCardFormData,
   type AttestationCardRecord,
 } from "@/lib/attestation-card";
@@ -28,6 +33,9 @@ export default function AttestationCardEditor({ card, mode }: Props) {
         baseSpecialty: card.baseSpecialty ?? "",
         hasTeacherQualification: card.hasTeacherQualification,
         hasAdditionalQualification: card.hasAdditionalQualification,
+        latestProfessionalQualification: card.latestProfessionalQualification ?? "",
+        laborExperienceYears: card.laborExperienceYears,
+        teachingExperienceYears: card.teachingExperienceYears,
       };
     }
 
@@ -51,6 +59,35 @@ export default function AttestationCardEditor({ card, mode }: Props) {
 
     if (baseSpecialtyError) {
       setError(baseSpecialtyError);
+      return;
+    }
+
+    const professionalQualificationError = getProfessionalQualificationValidationError(
+      form.latestProfessionalQualification,
+    );
+
+    if (professionalQualificationError) {
+      setError(professionalQualificationError);
+      return;
+    }
+
+    const laborExperienceYearsError = getExperienceYearsValidationError(
+      "Поле 4.1 години трудов стаж",
+      form.laborExperienceYears,
+    );
+
+    if (laborExperienceYearsError) {
+      setError(laborExperienceYearsError);
+      return;
+    }
+
+    const teachingExperienceYearsError = getExperienceYearsValidationError(
+      "Поле 4.2 години учителски стаж",
+      form.teachingExperienceYears,
+    );
+
+    if (teachingExperienceYearsError) {
+      setError(teachingExperienceYearsError);
       return;
     }
 
@@ -184,73 +221,147 @@ export default function AttestationCardEditor({ card, mode }: Props) {
             </p>
           </label>
 
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium text-slate-700">2.2 Професионална квалификация "учител"</legend>
-            <div className="flex flex-wrap gap-3">
-              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                <input
-                  type="radio"
-                  name="hasTeacherQualification"
-                  checked={form.hasTeacherQualification === true}
-                  onChange={() =>
-                    setForm((current) => ({
-                      ...current,
-                      hasTeacherQualification: true,
-                    }))
-                  }
-                />
-                Да
-              </label>
-              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                <input
-                  type="radio"
-                  name="hasTeacherQualification"
-                  checked={form.hasTeacherQualification === false}
-                  onChange={() =>
-                    setForm((current) => ({
-                      ...current,
-                      hasTeacherQualification: false,
-                    }))
-                  }
-                />
-                Не
-              </label>
-            </div>
-          </fieldset>
+          <div className="grid gap-4 md:grid-cols-2">
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium text-slate-700">2.2 Професионална квалификация "учител"</legend>
+              <div className="flex flex-wrap gap-3">
+                <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="hasTeacherQualification"
+                    checked={form.hasTeacherQualification === true}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        hasTeacherQualification: true,
+                      }))
+                    }
+                  />
+                  Да
+                </label>
+                <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="hasTeacherQualification"
+                    checked={form.hasTeacherQualification === false}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        hasTeacherQualification: false,
+                      }))
+                    }
+                  />
+                  Не
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium text-slate-700">2.3 Друга (нова/допълнителна) квалификация</legend>
+              <div className="flex flex-wrap gap-3">
+                <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="hasAdditionalQualification"
+                    checked={form.hasAdditionalQualification === true}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        hasAdditionalQualification: true,
+                      }))
+                    }
+                  />
+                  Да
+                </label>
+                <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="hasAdditionalQualification"
+                    checked={form.hasAdditionalQualification === false}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        hasAdditionalQualification: false,
+                      }))
+                    }
+                  />
+                  Не
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">3. Последна придобита професионално-квалификационна степен</h3>
 
           <fieldset className="space-y-2">
-            <legend className="text-sm font-medium text-slate-700">2.3 Друга (нова/допълнителна) квалификация</legend>
+            <legend className="text-sm font-medium text-slate-700">Опции</legend>
             <div className="flex flex-wrap gap-3">
-              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                <input
-                  type="radio"
-                  name="hasAdditionalQualification"
-                  checked={form.hasAdditionalQualification === true}
-                  onChange={() =>
-                    setForm((current) => ({
-                      ...current,
-                      hasAdditionalQualification: true,
-                    }))
-                  }
-                />
-                Да
-              </label>
-              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                <input
-                  type="radio"
-                  name="hasAdditionalQualification"
-                  checked={form.hasAdditionalQualification === false}
-                  onChange={() =>
-                    setForm((current) => ({
-                      ...current,
-                      hasAdditionalQualification: false,
-                    }))
-                  }
-                />
-                Не
-              </label>
+              {professionalQualificationOptions.map((option) => (
+                <label
+                  key={option}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                >
+                  <input
+                    type="radio"
+                    name="latestProfessionalQualification"
+                    value={option}
+                    checked={form.latestProfessionalQualification === option}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        latestProfessionalQualification: option,
+                      }))
+                    }
+                  />
+                  {option}
+                </label>
+              ))}
             </div>
           </fieldset>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">4. Професионален опит/учителски стаж – брой години</h3>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">4.1 години трудов стаж</span>
+              <input
+                type="number"
+                min={EXPERIENCE_YEARS_MIN}
+                max={EXPERIENCE_YEARS_MAX}
+                value={form.laborExperienceYears}
+                onChange={(event) => {
+                  const numericValue = Number(event.target.value);
+                  setForm((current) => ({
+                    ...current,
+                    laborExperienceYears: Number.isNaN(numericValue) ? 0 : numericValue,
+                  }));
+                }}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              />
+            </label>
+
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">4.2 години учителски стаж</span>
+              <input
+                type="number"
+                min={EXPERIENCE_YEARS_MIN}
+                max={EXPERIENCE_YEARS_MAX}
+                value={form.teachingExperienceYears}
+                onChange={(event) => {
+                  const numericValue = Number(event.target.value);
+                  setForm((current) => ({
+                    ...current,
+                    teachingExperienceYears: Number.isNaN(numericValue) ? 0 : numericValue,
+                  }));
+                }}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              />
+            </label>
+          </div>
         </div>
 
         {error ? (
