@@ -407,7 +407,7 @@ export default function AttestationCardEditor({ card, mode }: Props) {
 
           <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-700">5.1 Задължителна вътрешноинституционална квалификация</span>
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm text-slate-600">брой академични часове</span>
               <input
                 type="number"
@@ -421,7 +421,7 @@ export default function AttestationCardEditor({ card, mode }: Props) {
                     internalQualificationHours: Number.isNaN(numericValue) ? 0 : numericValue,
                   }));
                 }}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                className="w-full max-w-55 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
               />
             </div>
           </label>
@@ -471,29 +471,39 @@ export default function AttestationCardEditor({ card, mode }: Props) {
         <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
           <h3 className="text-lg font-semibold text-slate-900">6. Оценка за изпълнение препоръките от последното атестиране</h3>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm font-medium text-slate-700">
-              <span>Не</span>
-              <span>Да</span>
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-slate-700">Оценка</legend>
+            <div className="flex flex-wrap gap-3">
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="recommendationsImplemented"
+                  checked={form.recommendationsImplemented === true}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      recommendationsImplemented: true,
+                    }))
+                  }
+                />
+                Да
+              </label>
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="recommendationsImplemented"
+                  checked={form.recommendationsImplemented === false}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      recommendationsImplemented: false,
+                    }))
+                  }
+                />
+                Не
+              </label>
             </div>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={1}
-              value={form.recommendationsImplemented ? 1 : 0}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  recommendationsImplemented: Number(event.target.value) === 1,
-                }))
-              }
-              className="w-full accent-indigo-600"
-            />
-            <p className="text-sm text-slate-600">
-              Избрано: {form.recommendationsImplemented ? "Да" : "Не"}
-            </p>
-          </div>
+          </fieldset>
         </div>
 
         {error ? (
