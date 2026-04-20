@@ -30,6 +30,9 @@ export default async function AttestationCardDetailsPage({ params }: Props) {
     otherAfterInitial: card.otherAfterInitial
       ? educationDbValueToLabel(card.otherAfterInitial as EducationLevelDb)
       : null,
+    baseSpecialty: card.baseSpecialty,
+    hasTeacherQualification: card.hasTeacherQualification,
+    hasAdditionalQualification: card.hasAdditionalQualification,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import {
+  getBaseSpecialtyValidationError,
+  normalizeBaseSpecialty,
   educationDbValueToLabel,
   educationLabelToDbValue,
   type AttestationCardFormData,
@@ -13,6 +15,9 @@ function serializeCard(card: {
   id: string;
   firstInitial: string;
   otherAfterInitial: string | null;
+  baseSpecialty: string | null;
+  hasTeacherQualification: boolean;
+  hasAdditionalQualification: boolean;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -22,6 +27,9 @@ function serializeCard(card: {
     otherAfterInitial: card.otherAfterInitial
       ? educationDbValueToLabel(card.otherAfterInitial as keyof typeof educationDbValueToLabel)
       : null,
+    baseSpecialty: card.baseSpecialty,
+    hasTeacherQualification: card.hasTeacherQualification,
+    hasAdditionalQualification: card.hasAdditionalQualification,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };
@@ -60,11 +68,23 @@ export async function POST(request: Request) {
   const otherAfterInitial = body.otherAfterInitial
     ? educationLabelToDbValue(body.otherAfterInitial as EducationLevel)
     : null;
+  const baseSpecialtyError = getBaseSpecialtyValidationError(body.baseSpecialty);
+
+  if (baseSpecialtyError) {
+    return NextResponse.json({ error: baseSpecialtyError }, { status: 400 });
+  }
+
+  const baseSpecialty = normalizeBaseSpecialty(body.baseSpecialty);
+  const hasTeacherQualification = Boolean(body.hasTeacherQualification);
+  const hasAdditionalQualification = Boolean(body.hasAdditionalQualification);
 
   const createdCard = await prisma.attestationCard.create({
     data: {
       firstInitial,
       otherAfterInitial,
+      baseSpecialty,
+      hasTeacherQualification,
+      hasAdditionalQualification,
     },
   });
 

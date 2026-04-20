@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import {
+  getBaseSpecialtyValidationError,
+  normalizeBaseSpecialty,
   educationDbValueToLabel,
   educationLabelToDbValue,
   type AttestationCardFormData,
@@ -13,6 +15,9 @@ function serializeCard(card: {
   id: string;
   firstInitial: string;
   otherAfterInitial: string | null;
+  baseSpecialty: string | null;
+  hasTeacherQualification: boolean;
+  hasAdditionalQualification: boolean;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -22,6 +27,9 @@ function serializeCard(card: {
     otherAfterInitial: card.otherAfterInitial
       ? educationDbValueToLabel(card.otherAfterInitial as keyof typeof educationDbValueToLabel)
       : null,
+    baseSpecialty: card.baseSpecialty,
+    hasTeacherQualification: card.hasTeacherQualification,
+    hasAdditionalQualification: card.hasAdditionalQualification,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };
@@ -63,6 +71,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Поле 1.1 е задължително." }, { status: 400 });
   }
 
+  const baseSpecialtyError = getBaseSpecialtyValidationError(body.baseSpecialty);
+
+  if (baseSpecialtyError) {
+    return NextResponse.json({ error: baseSpecialtyError }, { status: 400 });
+  }
+
   const existingCard = await prisma.attestationCard.findUnique({
     where: { id },
   });
@@ -78,6 +92,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       otherAfterInitial: body.otherAfterInitial
         ? educationLabelToDbValue(body.otherAfterInitial as EducationLevel)
         : null,
+      baseSpecialty: normalizeBaseSpecialty(body.baseSpecialty),
+      hasTeacherQualification: Boolean(body.hasTeacherQualification),
+      hasAdditionalQualification: Boolean(body.hasAdditionalQualification),
     },
   });
 

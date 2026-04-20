@@ -24,6 +24,9 @@ model AttestationCard {
   id                String         @id @default(cuid())
   firstInitial      EducationLevel
   otherAfterInitial EducationLevel?
+  baseSpecialty     String?        @db.VarChar(255)
+  hasTeacherQualification Boolean   @default(false)
+  hasAdditionalQualification Boolean @default(false)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }

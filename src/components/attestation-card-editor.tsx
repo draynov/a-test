@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
+  BASE_SPECIALTY_MAX_LENGTH,
   createEmptyAttestationCardForm,
+  getBaseSpecialtyValidationError,
   educationOptions,
   type AttestationCardFormData,
   type AttestationCardRecord,
@@ -23,6 +25,9 @@ export default function AttestationCardEditor({ card, mode }: Props) {
       return {
         firstInitial: card.firstInitial,
         otherAfterInitial: card.otherAfterInitial ?? "",
+        baseSpecialty: card.baseSpecialty ?? "",
+        hasTeacherQualification: card.hasTeacherQualification,
+        hasAdditionalQualification: card.hasAdditionalQualification,
       };
     }
 
@@ -39,6 +44,13 @@ export default function AttestationCardEditor({ card, mode }: Props) {
 
     if (!form.firstInitial) {
       setError("Поле 1.1 е задължително.");
+      return;
+    }
+
+    const baseSpecialtyError = getBaseSpecialtyValidationError(form.baseSpecialty);
+
+    if (baseSpecialtyError) {
+      setError(baseSpecialtyError);
       return;
     }
 
@@ -139,6 +151,100 @@ export default function AttestationCardEditor({ card, mode }: Props) {
               ))}
             </select>
           </label>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">2. Професионална квалификация (специалност)</h3>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">
+              2.1 По базовата специалност от висшето образование <span className="text-rose-500">*</span>
+            </span>
+            <input
+              type="text"
+              maxLength={BASE_SPECIALTY_MAX_LENGTH}
+              value={form.baseSpecialty}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  baseSpecialty: event.target.value,
+                }))
+              }
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              placeholder="Въведи специалност"
+            />
+            <p className="text-xs text-slate-500">
+              {form.baseSpecialty.length}/{BASE_SPECIALTY_MAX_LENGTH} символа
+            </p>
+          </label>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-slate-700">2.2 Професионална квалификация "учител"</legend>
+            <div className="flex flex-wrap gap-3">
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="hasTeacherQualification"
+                  checked={form.hasTeacherQualification === true}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      hasTeacherQualification: true,
+                    }))
+                  }
+                />
+                Да
+              </label>
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="hasTeacherQualification"
+                  checked={form.hasTeacherQualification === false}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      hasTeacherQualification: false,
+                    }))
+                  }
+                />
+                Не
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-slate-700">2.3 Друга (нова/допълнителна) квалификация</legend>
+            <div className="flex flex-wrap gap-3">
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="hasAdditionalQualification"
+                  checked={form.hasAdditionalQualification === true}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      hasAdditionalQualification: true,
+                    }))
+                  }
+                />
+                Да
+              </label>
+              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                <input
+                  type="radio"
+                  name="hasAdditionalQualification"
+                  checked={form.hasAdditionalQualification === false}
+                  onChange={() =>
+                    setForm((current) => ({
+                      ...current,
+                      hasAdditionalQualification: false,
+                    }))
+                  }
+                />
+                Не
+              </label>
+            </div>
+          </fieldset>
         </div>
 
         {error ? (
