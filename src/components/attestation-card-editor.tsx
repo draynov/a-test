@@ -107,50 +107,56 @@ export default function AttestationCardEditor({ card, mode }: Props) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
-        <div className="grid gap-5 md:grid-cols-2">
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">
-              1.1 Първоначална <span className="text-rose-500">*</span>
-            </span>
-            <select
-              value={form.firstInitial}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  firstInitial: event.target.value as AttestationCardFormData["firstInitial"],
-                }))
-              }
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
-            >
-              <option value="">Избери образование</option>
-              {educationOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">
+            1. Образование, образователно-квалификационна степен, образователна и научна степен, научна степен
+          </h3>
 
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">1.2 Друга след първоначалната</span>
-            <select
-              value={form.otherAfterInitial}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  otherAfterInitial: event.target.value as AttestationCardFormData["otherAfterInitial"],
-                }))
-              }
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
-            >
-              <option value="">Няма избрана стойност</option>
-              {educationOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">
+                1.1 Първоначална <span className="text-rose-500">*</span>
+              </span>
+              <select
+                value={form.firstInitial}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    firstInitial: event.target.value as AttestationCardFormData["firstInitial"],
+                  }))
+                }
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+              >
+                <option value="">Избери образование</option>
+                {educationOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">1.2 Друга след първоначалната</span>
+              <select
+                value={form.otherAfterInitial}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    otherAfterInitial: event.target.value as AttestationCardFormData["otherAfterInitial"],
+                  }))
+                }
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+              >
+                <option value="">Няма избрана стойност</option>
+                {educationOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
 
         <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
