@@ -38,6 +38,10 @@ model AttestationCard {
   latestProfessionalQualification ProfessionalQualification?
   laborExperienceYears Int          @default(0)
   teachingExperienceYears Int       @default(0)
+  internalQualificationHours Int     @default(0)
+  mandatoryQualificationHours Int    @default(0)
+  mandatoryQualificationCredits Int  @default(0)
+  recommendationsImplemented Boolean @default(false)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }

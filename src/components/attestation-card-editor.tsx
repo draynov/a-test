@@ -8,9 +8,12 @@ import {
   BASE_SPECIALTY_MAX_LENGTH,
   EXPERIENCE_YEARS_MAX,
   EXPERIENCE_YEARS_MIN,
+  QUALIFICATION_HOURS_MAX,
+  QUALIFICATION_HOURS_MIN,
   createEmptyAttestationCardForm,
   getBaseSpecialtyValidationError,
   getExperienceYearsValidationError,
+  getQualificationAmountValidationError,
   getProfessionalQualificationValidationError,
   educationOptions,
   professionalQualificationOptions,
@@ -36,6 +39,10 @@ export default function AttestationCardEditor({ card, mode }: Props) {
         latestProfessionalQualification: card.latestProfessionalQualification ?? "",
         laborExperienceYears: card.laborExperienceYears,
         teachingExperienceYears: card.teachingExperienceYears,
+        internalQualificationHours: card.internalQualificationHours,
+        mandatoryQualificationHours: card.mandatoryQualificationHours,
+        mandatoryQualificationCredits: card.mandatoryQualificationCredits,
+        recommendationsImplemented: card.recommendationsImplemented,
       };
     }
 
@@ -91,6 +98,36 @@ export default function AttestationCardEditor({ card, mode }: Props) {
       return;
     }
 
+    const internalQualificationHoursError = getQualificationAmountValidationError(
+      "Поле 5.1 академични часове",
+      form.internalQualificationHours,
+    );
+
+    if (internalQualificationHoursError) {
+      setError(internalQualificationHoursError);
+      return;
+    }
+
+    const mandatoryQualificationHoursError = getQualificationAmountValidationError(
+      "Поле 5.2 академични часове",
+      form.mandatoryQualificationHours,
+    );
+
+    if (mandatoryQualificationHoursError) {
+      setError(mandatoryQualificationHoursError);
+      return;
+    }
+
+    const mandatoryQualificationCreditsError = getQualificationAmountValidationError(
+      "Поле 5.2 квалификационни кредити",
+      form.mandatoryQualificationCredits,
+    );
+
+    if (mandatoryQualificationCreditsError) {
+      setError(mandatoryQualificationCreditsError);
+      return;
+    }
+
     try {
       setIsSaving(true);
       setError("");
@@ -140,7 +177,6 @@ export default function AttestationCardEditor({ card, mode }: Props) {
           </button>
         </div>
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Раздел А</p>
-        <h2 className="mt-1 text-2xl font-semibold text-slate-950">1. Образование</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
@@ -361,6 +397,102 @@ export default function AttestationCardEditor({ card, mode }: Props) {
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
               />
             </label>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">
+            5. Участие в квалификационни форми в брой часове за периода на атестиране
+          </h3>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">5.1 Задължителна вътрешноинституционална квалификация</span>
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
+              <span className="text-sm text-slate-600">брой академични часове</span>
+              <input
+                type="number"
+                min={QUALIFICATION_HOURS_MIN}
+                max={QUALIFICATION_HOURS_MAX}
+                value={form.internalQualificationHours}
+                onChange={(event) => {
+                  const numericValue = Number(event.target.value);
+                  setForm((current) => ({
+                    ...current,
+                    internalQualificationHours: Number.isNaN(numericValue) ? 0 : numericValue,
+                  }));
+                }}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              />
+            </div>
+          </label>
+
+          <div className="space-y-2">
+            <span className="text-sm font-medium text-slate-700">5.2 Задължителни часове</span>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block space-y-2">
+                <span className="text-sm text-slate-600">брой академични часове</span>
+                <input
+                  type="number"
+                  min={QUALIFICATION_HOURS_MIN}
+                  max={QUALIFICATION_HOURS_MAX}
+                  value={form.mandatoryQualificationHours}
+                  onChange={(event) => {
+                    const numericValue = Number(event.target.value);
+                    setForm((current) => ({
+                      ...current,
+                      mandatoryQualificationHours: Number.isNaN(numericValue) ? 0 : numericValue,
+                    }));
+                  }}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm text-slate-600">брой квалификационни кредити</span>
+                <input
+                  type="number"
+                  min={QUALIFICATION_HOURS_MIN}
+                  max={QUALIFICATION_HOURS_MAX}
+                  value={form.mandatoryQualificationCredits}
+                  onChange={(event) => {
+                    const numericValue = Number(event.target.value);
+                    setForm((current) => ({
+                      ...current,
+                      mandatoryQualificationCredits: Number.isNaN(numericValue) ? 0 : numericValue,
+                    }));
+                  }}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+          <h3 className="text-lg font-semibold text-slate-900">6. Оценка за изпълнение препоръките от последното атестиране</h3>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm font-medium text-slate-700">
+              <span>Не</span>
+              <span>Да</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={1}
+              value={form.recommendationsImplemented ? 1 : 0}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  recommendationsImplemented: Number(event.target.value) === 1,
+                }))
+              }
+              className="w-full accent-indigo-600"
+            />
+            <p className="text-sm text-slate-600">
+              Избрано: {form.recommendationsImplemented ? "Да" : "Не"}
+            </p>
           </div>
         </div>
 

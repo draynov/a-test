@@ -52,6 +52,8 @@ export type ProfessionalQualificationDb = keyof typeof professionalQualification
 export const BASE_SPECIALTY_MAX_LENGTH = 255;
 export const EXPERIENCE_YEARS_MIN = 0;
 export const EXPERIENCE_YEARS_MAX = 99;
+export const QUALIFICATION_HOURS_MIN = 0;
+export const QUALIFICATION_HOURS_MAX = 999;
 
 export type AttestationCardFormData = {
   firstInitial: EducationLevel | "";
@@ -62,6 +64,10 @@ export type AttestationCardFormData = {
   latestProfessionalQualification: ProfessionalQualification | "";
   laborExperienceYears: number;
   teachingExperienceYears: number;
+  internalQualificationHours: number;
+  mandatoryQualificationHours: number;
+  mandatoryQualificationCredits: number;
+  recommendationsImplemented: boolean;
 };
 
 export type AttestationCardRecord = {
@@ -74,6 +80,10 @@ export type AttestationCardRecord = {
   latestProfessionalQualification: ProfessionalQualification | null;
   laborExperienceYears: number;
   teachingExperienceYears: number;
+  internalQualificationHours: number;
+  mandatoryQualificationHours: number;
+  mandatoryQualificationCredits: number;
+  recommendationsImplemented: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -88,6 +98,10 @@ export function createEmptyAttestationCardForm(): AttestationCardFormData {
     latestProfessionalQualification: "",
     laborExperienceYears: 0,
     teachingExperienceYears: 0,
+    internalQualificationHours: 0,
+    mandatoryQualificationHours: 0,
+    mandatoryQualificationCredits: 0,
+    recommendationsImplemented: false,
   };
 }
 
@@ -134,6 +148,26 @@ export function getExperienceYearsValidationError(label: string, value: unknown)
 
   if (Number.isNaN(parsedValue)) {
     return `${label} трябва да е цяло число от 0 до 99.`;
+  }
+
+  return null;
+}
+
+export function parseQualificationAmount(value: unknown): number {
+  const numeric = Number(value);
+
+  if (!Number.isInteger(numeric) || numeric < QUALIFICATION_HOURS_MIN || numeric > QUALIFICATION_HOURS_MAX) {
+    return NaN;
+  }
+
+  return numeric;
+}
+
+export function getQualificationAmountValidationError(label: string, value: unknown): string | null {
+  const parsedValue = parseQualificationAmount(value);
+
+  if (Number.isNaN(parsedValue)) {
+    return `${label} трябва да е цяло число от 0 до 999.`;
   }
 
   return null;

@@ -43,6 +43,10 @@ export default async function AttestationCardDetailsPage({ params }: Props) {
       : null,
     laborExperienceYears: card.laborExperienceYears,
     teachingExperienceYears: card.teachingExperienceYears,
+    internalQualificationHours: card.internalQualificationHours,
+    mandatoryQualificationHours: card.mandatoryQualificationHours,
+    mandatoryQualificationCredits: card.mandatoryQualificationCredits,
+    recommendationsImplemented: card.recommendationsImplemented,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };

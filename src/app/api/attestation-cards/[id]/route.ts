@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import {
   getExperienceYearsValidationError,
+  getQualificationAmountValidationError,
   getProfessionalQualificationValidationError,
   parseExperienceYears,
+  parseQualificationAmount,
   professionalQualificationDbValueToLabel,
   professionalQualificationLabelToDbValue,
   getBaseSpecialtyValidationError,
@@ -27,6 +29,10 @@ function serializeCard(card: {
   latestProfessionalQualification: string | null;
   laborExperienceYears: number;
   teachingExperienceYears: number;
+  internalQualificationHours: number;
+  mandatoryQualificationHours: number;
+  mandatoryQualificationCredits: number;
+  recommendationsImplemented: boolean;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -46,6 +52,10 @@ function serializeCard(card: {
       : null,
     laborExperienceYears: card.laborExperienceYears,
     teachingExperienceYears: card.teachingExperienceYears,
+    internalQualificationHours: card.internalQualificationHours,
+    mandatoryQualificationHours: card.mandatoryQualificationHours,
+    mandatoryQualificationCredits: card.mandatoryQualificationCredits,
+    recommendationsImplemented: card.recommendationsImplemented,
     createdAt: card.createdAt.toISOString(),
     updatedAt: card.updatedAt.toISOString(),
   };
@@ -119,6 +129,33 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: teachingExperienceYearsError }, { status: 400 });
   }
 
+  const internalQualificationHoursError = getQualificationAmountValidationError(
+    "Поле 5.1 академични часове",
+    body.internalQualificationHours,
+  );
+
+  if (internalQualificationHoursError) {
+    return NextResponse.json({ error: internalQualificationHoursError }, { status: 400 });
+  }
+
+  const mandatoryQualificationHoursError = getQualificationAmountValidationError(
+    "Поле 5.2 академични часове",
+    body.mandatoryQualificationHours,
+  );
+
+  if (mandatoryQualificationHoursError) {
+    return NextResponse.json({ error: mandatoryQualificationHoursError }, { status: 400 });
+  }
+
+  const mandatoryQualificationCreditsError = getQualificationAmountValidationError(
+    "Поле 5.2 квалификационни кредити",
+    body.mandatoryQualificationCredits,
+  );
+
+  if (mandatoryQualificationCreditsError) {
+    return NextResponse.json({ error: mandatoryQualificationCreditsError }, { status: 400 });
+  }
+
   const existingCard = await prisma.attestationCard.findUnique({
     where: { id },
   });
@@ -142,6 +179,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       ),
       laborExperienceYears: parseExperienceYears(body.laborExperienceYears),
       teachingExperienceYears: parseExperienceYears(body.teachingExperienceYears),
+      internalQualificationHours: parseQualificationAmount(body.internalQualificationHours),
+      mandatoryQualificationHours: parseQualificationAmount(body.mandatoryQualificationHours),
+      mandatoryQualificationCredits: parseQualificationAmount(body.mandatoryQualificationCredits),
+      recommendationsImplemented: Boolean(body.recommendationsImplemented),
     },
   });
 
