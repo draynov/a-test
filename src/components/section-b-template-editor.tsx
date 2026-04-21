@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   SECTION_B_CARD_TYPE_OPTIONS,
+  getSectionBAdditionalCriteriaConfig,
   getSectionBCardTypeLabel,
   type SectionBTemplateCardType,
 } from "@/lib/section-b-template";
@@ -22,7 +23,7 @@ type CustomQuestion = {
 type ApiCustomQuestion = {
   id: string;
   templateId: string;
-  sectionRoman: "IV";
+  sectionRoman: "IV" | "V";
   questionCode: string;
   prompt: string;
   scoreMethodology1: string;
@@ -78,10 +79,10 @@ function getMethodologyCount(question: CustomQuestion) {
 }
 
 function getSlotIndex(question: ApiCustomQuestion) {
-  const parsedCode = /^IV\.(\d+)$/.exec(question.questionCode);
+  const parsedCode = /^(IV|V)\.(\d+)$/.exec(question.questionCode);
 
   if (parsedCode) {
-    const index = Number(parsedCode[1]) - 1;
+    const index = Number(parsedCode[2]) - 1;
 
     if (index >= 0 && index < CUSTOM_QUESTION_SLOT_COUNT) {
       return index;
@@ -139,6 +140,8 @@ export default function SectionBTemplateEditor({ templateId, title, description 
 
     return { filled, total };
   }, [customQuestions]);
+
+  const additionalCriteriaConfig = useMemo(() => getSectionBAdditionalCriteriaConfig(cardType), [cardType]);
 
   useEffect(() => {
     let isMounted = true;
@@ -255,7 +258,7 @@ export default function SectionBTemplateEditor({ templateId, title, description 
       cardType,
       customQuestions: customQuestions.map((question) => ({
         prompt: question.prompt.trim(),
-        sectionRoman: "IV" as const,
+        sectionRoman: additionalCriteriaConfig.sectionRoman,
         scoreMethodology1: question.scoreMethodology1.trim(),
         scoreMethodology1_5: question.scoreMethodology1_5.trim(),
         scoreMethodology2: question.scoreMethodology2.trim(),
@@ -340,8 +343,10 @@ export default function SectionBTemplateEditor({ templateId, title, description 
         <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Допълнителни въпроси</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Подраздел IV - 5 въпроса</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{additionalCriteriaConfig.title}</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
+                Подраздел {additionalCriteriaConfig.sectionRoman} - 5 въпроса
+              </h2>
               <p className="mt-2 text-sm text-slate-600">
                 Всеки въпрос има скрити методики за 1, 1.5 и 2, които се редактират от pop-up.
               </p>
@@ -360,7 +365,9 @@ export default function SectionBTemplateEditor({ templateId, title, description 
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">IV.{index + 1}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                          {additionalCriteriaConfig.sectionRoman}.{index + 1}
+                        </p>
                         <p className="text-sm font-medium text-slate-700">Съдържание на въпроса</p>
                       </div>
                       <label className="mt-2 grid gap-2">
@@ -477,7 +484,7 @@ export default function SectionBTemplateEditor({ templateId, title, description 
           <div className="w-full max-w-xl overflow-hidden rounded-4xl border border-slate-200 bg-white p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.3)]">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-700">Методика</p>
             <h3 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
-              Въпрос IV.{activeMethodologyEditor.questionIndex + 1} - оценка {METHODOLOGY_LABELS[activeMethodologyEditor.key]}
+              Въпрос {additionalCriteriaConfig.sectionRoman}.{activeMethodologyEditor.questionIndex + 1} - оценка {METHODOLOGY_LABELS[activeMethodologyEditor.key]}
             </h3>
             <p className="mt-2 text-sm text-slate-600">{activeQuestion.prompt || "Въпросът все още е празен."}</p>
 

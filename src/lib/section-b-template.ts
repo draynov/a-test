@@ -32,6 +32,38 @@ export function getSectionBCardTypeLabel(cardType: SectionBTemplateCardType) {
   return SECTION_B_CARD_TYPE_LABELS[cardType];
 }
 
+export type SectionBAdditionalCriteriaConfig = {
+  title: string;
+  sectionRoman: Extract<SectionRoman, "IV" | "V">;
+};
+
+const SECTION_B_ADDITIONAL_CRITERIA_CONFIG: Record<SectionBTemplateCardType, SectionBAdditionalCriteriaConfig> = {
+  TEACHER: {
+    title: "Критерии, определени от директора на институцията",
+    sectionRoman: "IV",
+  },
+  EDUCATOR: {
+    title: "Критерии, определени от директора на институцията",
+    sectionRoman: "IV",
+  },
+  DIRECTOR: {
+    title: "Критерии, определени от директора на работодателя",
+    sectionRoman: "V",
+  },
+  DEPUTY_DIRECTOR: {
+    title: "Критерии, определени от директора на институцията",
+    sectionRoman: "IV",
+  },
+  PSYCHOLOGIST_COUNSELOR: {
+    title: "Критерии, определени от директора на институцията",
+    sectionRoman: "IV",
+  },
+};
+
+export function getSectionBAdditionalCriteriaConfig(cardType: SectionBTemplateCardType) {
+  return SECTION_B_ADDITIONAL_CRITERIA_CONFIG[cardType];
+}
+
 export type SectionBCustomQuestionInput = {
   prompt: string;
   sectionRoman?: SectionRoman;

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
   SECTION_B_ALLOWED_CARD_TYPES,
+  getSectionBAdditionalCriteriaConfig,
   getCustomQuestionsValidationError,
   getTemplateNameValidationError,
   normalizeCustomQuestions,
@@ -79,6 +80,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   const customQuestions = normalizeCustomQuestions(body.customQuestions ?? []);
   const customQuestionsError = getCustomQuestionsValidationError(customQuestions);
+  const additionalCriteriaConfig = getSectionBAdditionalCriteriaConfig(cardType);
 
   if (customQuestionsError) {
     return NextResponse.json({ error: customQuestionsError }, { status: 400 });
@@ -98,13 +100,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           create: customQuestions
             .filter((question) => question.prompt.length > 0)
             .map((question, index) => ({
-            sectionRoman: question.sectionRoman ?? "IV",
-            questionCode: `IV.${index + 1}`,
-            prompt: question.prompt,
-            scoreMethodology1: question.scoreMethodology1,
-            scoreMethodology1_5: question.scoreMethodology1_5,
-            scoreMethodology2: question.scoreMethodology2,
-            displayOrder: index + 1,
+              sectionRoman: question.sectionRoman ?? additionalCriteriaConfig.sectionRoman,
+              questionCode: `${additionalCriteriaConfig.sectionRoman}.${index + 1}`,
+              prompt: question.prompt,
+              scoreMethodology1: question.scoreMethodology1,
+              scoreMethodology1_5: question.scoreMethodology1_5,
+              scoreMethodology2: question.scoreMethodology2,
+              displayOrder: index + 1,
             })),
         },
       },

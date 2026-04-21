@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getSectionBCardTypeLabel } from "@/lib/section-b-template";
+import { getSectionBAdditionalCriteriaConfig, getSectionBCardTypeLabel } from "@/lib/section-b-template";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -70,6 +70,7 @@ export default async function TemplatesPage() {
 
           const questionCount = template.customQuestions.length;
           const isMethodologyComplete = filledMethodologies === 15;
+          const additionalCriteriaConfig = getSectionBAdditionalCriteriaConfig(template.cardType);
 
           return (
           <article key={template.id} className="rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
@@ -81,7 +82,7 @@ export default async function TemplatesPage() {
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{template.name}</h2>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                IV: {questionCount}/5
+                {additionalCriteriaConfig.sectionRoman}: {questionCount}/5
               </span>
             </div>
 
