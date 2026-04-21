@@ -5,11 +5,9 @@ import { prisma } from "@/lib/prisma";
 import {
   SECTION_B_ALLOWED_CARD_TYPES,
   getCustomQuestionsValidationError,
-  getScoreMethodologyValidationError,
   getTemplateNameValidationError,
   normalizeCustomQuestions,
   normalizeTemplateName,
-  normalizeTemplateText,
   type SectionBTemplateInput,
 } from "@/lib/section-b-template";
 
@@ -79,24 +77,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: nameError }, { status: 400 });
   }
 
-  const methodology1Error = getScoreMethodologyValidationError(body.scoreMethodology1, "Методика за 1");
-
-  if (methodology1Error) {
-    return NextResponse.json({ error: methodology1Error }, { status: 400 });
-  }
-
-  const methodology15Error = getScoreMethodologyValidationError(body.scoreMethodology1_5, "Методика за 1.5");
-
-  if (methodology15Error) {
-    return NextResponse.json({ error: methodology15Error }, { status: 400 });
-  }
-
-  const methodology2Error = getScoreMethodologyValidationError(body.scoreMethodology2, "Методика за 2");
-
-  if (methodology2Error) {
-    return NextResponse.json({ error: methodology2Error }, { status: 400 });
-  }
-
   const customQuestions = normalizeCustomQuestions(body.customQuestions ?? []);
   const customQuestionsError = getCustomQuestionsValidationError(customQuestions);
 
@@ -114,16 +94,18 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       data: {
         name: normalizeTemplateName(body.name),
         cardType,
-        scoreMethodology1: normalizeTemplateText(body.scoreMethodology1),
-        scoreMethodology1_5: normalizeTemplateText(body.scoreMethodology1_5),
-        scoreMethodology2: normalizeTemplateText(body.scoreMethodology2),
         customQuestions: {
-          create: customQuestions.map((question, index) => ({
+          create: customQuestions
+            .filter((question) => question.prompt.length > 0)
+            .map((question, index) => ({
             sectionRoman: question.sectionRoman ?? "IV",
             questionCode: `IV.${index + 1}`,
             prompt: question.prompt,
+            scoreMethodology1: question.scoreMethodology1,
+            scoreMethodology1_5: question.scoreMethodology1_5,
+            scoreMethodology2: question.scoreMethodology2,
             displayOrder: index + 1,
-          })),
+            })),
         },
       },
       include: {

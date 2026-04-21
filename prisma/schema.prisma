@@ -124,9 +124,6 @@ model SectionBTemplate {
   id                    String              @id @default(cuid())
   name                  String              @db.VarChar(150)
   cardType              AttestationCardType
-  scoreMethodology1     String              @db.Text
-  scoreMethodology1_5   String              @db.Text
-  scoreMethodology2     String              @db.Text
   customQuestions       SectionBCustomQuestion[]
   attestationCards      AttestationCard[]
   createdAt             DateTime            @default(now())
@@ -142,6 +139,9 @@ model SectionBCustomQuestion {
   sectionRoman SectionRoman     @default(IV)
   questionCode String           @db.VarChar(20)
   prompt      String            @db.Text
+  scoreMethodology1   String    @default("") @db.Text
+  scoreMethodology1_5 String    @default("") @db.Text
+  scoreMethodology2   String    @default("") @db.Text
   displayOrder Int
   assessedResponses SectionBAssessedCustomResponse[]
   committeeResponses SectionBCommitteeCustomResponse[]

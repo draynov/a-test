@@ -35,14 +35,14 @@ export function getSectionBCardTypeLabel(cardType: SectionBTemplateCardType) {
 export type SectionBCustomQuestionInput = {
   prompt: string;
   sectionRoman?: SectionRoman;
+  scoreMethodology1?: string;
+  scoreMethodology1_5?: string;
+  scoreMethodology2?: string;
 };
 
 export type SectionBTemplateInput = {
   name: string;
   cardType: SectionBTemplateCardType;
-  scoreMethodology1: string;
-  scoreMethodology1_5: string;
-  scoreMethodology2: string;
   customQuestions: SectionBCustomQuestionInput[];
 };
 
@@ -62,14 +62,6 @@ export function getTemplateNameValidationError(value: string | undefined) {
   return null;
 }
 
-export function getScoreMethodologyValidationError(value: string | undefined, label: string) {
-  if (!normalizeTemplateText(value)) {
-    return `${label} е задължителна.`;
-  }
-
-  return null;
-}
-
 export function getCustomQuestionsValidationError(questions: SectionBCustomQuestionInput[]) {
   if (questions.length > 5) {
     return "Позволени са най-много 5 custom въпроса.";
@@ -78,8 +70,13 @@ export function getCustomQuestionsValidationError(questions: SectionBCustomQuest
   for (let index = 0; index < questions.length; index += 1) {
     const question = questions[index];
 
-    if (!normalizeTemplateText(question?.prompt)) {
-      return `Custom въпрос ${index + 1} е задължителен.`;
+    const prompt = normalizeTemplateText(question?.prompt);
+    const scoreMethodology1 = normalizeTemplateText(question?.scoreMethodology1);
+    const scoreMethodology1_5 = normalizeTemplateText(question?.scoreMethodology1_5);
+    const scoreMethodology2 = normalizeTemplateText(question?.scoreMethodology2);
+
+    if (!prompt && (scoreMethodology1 || scoreMethodology1_5 || scoreMethodology2)) {
+      return `Custom въпрос ${index + 1} има методика, но няма текст.`;
     }
   }
 
@@ -91,6 +88,9 @@ export function normalizeCustomQuestions(questions: SectionBCustomQuestionInput[
     .map((question) => ({
       prompt: normalizeTemplateText(question.prompt),
       sectionRoman: question.sectionRoman ?? "IV",
+      scoreMethodology1: normalizeTemplateText(question.scoreMethodology1),
+      scoreMethodology1_5: normalizeTemplateText(question.scoreMethodology1_5),
+      scoreMethodology2: normalizeTemplateText(question.scoreMethodology2),
     }))
-    .filter((question) => question.prompt.length > 0);
+    .slice(0, 5);
 }

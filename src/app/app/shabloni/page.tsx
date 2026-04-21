@@ -58,7 +58,20 @@ export default async function TemplatesPage() {
           </div>
         ) : null}
 
-        {templates.map((template) => (
+        {templates.map((template) => {
+          const filledMethodologies = template.customQuestions.reduce((sum, question) => {
+            return (
+              sum +
+              (question.scoreMethodology1.trim().length > 0 ? 1 : 0) +
+              (question.scoreMethodology1_5.trim().length > 0 ? 1 : 0) +
+              (question.scoreMethodology2.trim().length > 0 ? 1 : 0)
+            );
+          }, 0);
+
+          const questionCount = template.customQuestions.length;
+          const isMethodologyComplete = filledMethodologies === 15;
+
+          return (
           <article key={template.id} className="rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -68,22 +81,22 @@ export default async function TemplatesPage() {
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{template.name}</h2>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                IV: {template.customQuestions.length}
+                IV: {questionCount}/5
               </span>
             </div>
 
             <div className="mt-4 space-y-3 text-sm text-slate-600">
               <p>
-                <span className="font-semibold text-slate-900">Методика 1:</span> {template.scoreMethodology1.slice(0, 80)}
-                {template.scoreMethodology1.length > 80 ? "..." : ""}
+                <span className="font-semibold text-slate-900">Методики:</span> {filledMethodologies}/15
               </p>
               <p>
-                <span className="font-semibold text-slate-900">Методика 1.5:</span> {template.scoreMethodology1_5.slice(0, 80)}
-                {template.scoreMethodology1_5.length > 80 ? "..." : ""}
-              </p>
-              <p>
-                <span className="font-semibold text-slate-900">Методика 2:</span> {template.scoreMethodology2.slice(0, 80)}
-                {template.scoreMethodology2.length > 80 ? "..." : ""}
+                <span
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                    isMethodologyComplete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                  }`}
+                >
+                  {isMethodologyComplete ? "Пълни методики" : "Непълна методика"}
+                </span>
               </p>
             </div>
 
@@ -97,7 +110,8 @@ export default async function TemplatesPage() {
               </Link>
             </div>
           </article>
-        ))}
+          );
+        })}
       </section>
     </main>
   );
