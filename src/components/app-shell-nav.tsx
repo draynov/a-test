@@ -83,6 +83,12 @@ const navItems = [
     icon: LayersIcon,
   },
   {
+    href: "/app/sistemni-shabloni",
+    label: "Системни шаблони",
+    startsWith: "/app/sistemni-shabloni",
+    icon: LayersIcon,
+  },
+  {
     href: "/app/potrebiteli",
     label: "Потребители",
     startsWith: "/app/potrebiteli",

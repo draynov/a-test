@@ -36,6 +36,12 @@ export default async function TemplatesPage() {
               Записани шаблони: {templates.length}
             </div>
             <Link
+              href="/app/sistemni-shabloni"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
+            >
+              Системни шаблони
+            </Link>
+            <Link
               href="/app/shabloni/novo"
               className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
             >

@@ -1,22 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   SECTION_B_CARD_TYPE_OPTIONS,
   getSectionBCardTypeLabel,
   type SectionBTemplateCardType,
 } from "@/lib/section-b-template";
-
-type SystemQuestion = {
-  code: string;
-  section: "I" | "II" | "III";
-  prompt: string;
-  displayOrder: number;
-};
-
-type SectionKey = SystemQuestion["section"];
 
 type CustomQuestion = {
   id: string;
@@ -54,11 +45,6 @@ type ApiTemplate = {
   updatedAt: string;
 };
 
-type TemplatesApiResponse = {
-  templates: ApiTemplate[];
-  systemQuestions: ApiSystemQuestion[];
-};
-
 type TemplateEditorProps = {
   templateId?: string;
   title: string;
@@ -79,7 +65,6 @@ function createCustomQuestion(): CustomQuestion {
 }
 
 export default function SectionBTemplateEditor({ templateId, title, description }: TemplateEditorProps) {
-  const [systemQuestions, setSystemQuestions] = useState<SystemQuestion[]>([]);
   const [cardType, setCardType] = useState<SectionBTemplateCardType>("TEACHER");
   const [templateName, setTemplateName] = useState("");
   const [scoreOne, setScoreOne] = useState(scoreMethodologyDefaults.one);
@@ -90,7 +75,6 @@ export default function SectionBTemplateEditor({ templateId, title, description 
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
-  const [hasLoadedTemplate, setHasLoadedTemplate] = useState(!templateId);
 
   const canAddMoreCustomQuestions = customQuestions.length < 5;
   const isTemplateValid =
@@ -98,22 +82,6 @@ export default function SectionBTemplateEditor({ templateId, title, description 
     scoreOne.trim().length > 0 &&
     scoreOnePointFive.trim().length > 0 &&
     scoreTwo.trim().length > 0;
-
-  const groupedQuestions = useMemo(() => {
-    const grouped: Record<SectionKey, SystemQuestion[]> = {
-      I: [],
-      II: [],
-      III: [],
-    };
-
-    [...systemQuestions]
-      .sort((left, right) => left.displayOrder - right.displayOrder)
-      .forEach((question) => {
-        grouped[question.section].push(question);
-      });
-
-    return grouped;
-  }, [systemQuestions]);
 
   useEffect(() => {
     let isMounted = true;
@@ -160,14 +128,9 @@ export default function SectionBTemplateEditor({ templateId, title, description 
           setCustomQuestions([createCustomQuestion()]);
           setSaveMessage(null);
         }
-
-        if (isMounted) {
-          setHasLoadedTemplate(true);
-        }
       } catch (error) {
         if (isMounted) {
           setErrorMessage(error instanceof Error ? error.message : "Неуспешно зареждане на шаблона.");
-          setHasLoadedTemplate(true);
           setIsLoading(false);
         }
       }
@@ -179,55 +142,6 @@ export default function SectionBTemplateEditor({ templateId, title, description 
       isMounted = false;
     };
   }, [templateId]);
-
-  useEffect(() => {
-    if (!hasLoadedTemplate) {
-      return;
-    }
-
-    let isMounted = true;
-
-    async function loadSystemQuestions() {
-      try {
-        setIsLoading(true);
-
-        const templatesResponse = await fetch(`/api/section-b/templates?cardType=${cardType}`, { cache: "no-store" });
-        const templatesData = (await templatesResponse.json()) as TemplatesApiResponse | { error?: string };
-
-        if (!templatesResponse.ok) {
-          throw new Error("error" in templatesData && templatesData.error ? templatesData.error : "Неуспешно зареждане на системните въпроси.");
-        }
-
-        const typedTemplatesData = templatesData as TemplatesApiResponse;
-        const normalizedSystemQuestions = typedTemplatesData.systemQuestions
-          .filter((question) => question.sectionRoman !== "IV")
-          .map((question) => ({
-            code: question.questionCode,
-            section: question.sectionRoman as "I" | "II" | "III",
-            prompt: question.prompt,
-            displayOrder: question.displayOrder,
-          }));
-
-        if (isMounted) {
-          setSystemQuestions(normalizedSystemQuestions);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : "Неуспешно зареждане на системните въпроси.");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadSystemQuestions();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [cardType, hasLoadedTemplate]);
 
   const handleAddCustomQuestion = () => {
     if (!canAddMoreCustomQuestions) {
@@ -325,6 +239,12 @@ export default function SectionBTemplateEditor({ templateId, title, description 
             <div className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
               Тип карта: {getSectionBCardTypeLabel(cardType)}
             </div>
+            <Link
+              href="/app/sistemni-shabloni"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
+            >
+              Системни шаблони
+            </Link>
             <Link
               href="/app/shabloni"
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
@@ -487,52 +407,6 @@ export default function SectionBTemplateEditor({ templateId, title, description 
             </div>
           </div>
         </section>
-
-        <aside className="space-y-6">
-          <div className="sticky top-6 space-y-6">
-            <div className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Преглед</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Системни въпроси</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                {cardType === "TEACHER"
-                  ? "Това е readonly наборът от 20 фиксирани въпроса за учителската карта."
-                  : "За този тип карта засега няма фиксирани въпроси. Учителските въпроси остават единствените заредени системни въпроси."}
-              </p>
-
-              <div className="mt-5 space-y-5">
-                {(["I", "II", "III"] as const).map((section) => (
-                  <div key={section} className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">Раздел {section}</span>
-                      <span className="text-sm text-slate-500">{groupedQuestions[section].length} въпроса</span>
-                    </div>
-
-                    <div className="space-y-3">
-                      {groupedQuestions[section].map((question) => (
-                        <article key={question.code} className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
-                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-700">{question.code}</p>
-                          <p className="mt-2 text-sm leading-6 text-slate-700">{question.prompt}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="overflow-hidden rounded-4xl border border-indigo-100 bg-indigo-50/70 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.12)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-700">Ориентир</p>
-              <h3 className="mt-2 text-lg font-semibold tracking-tight text-slate-950">Какво се пази в шаблона</h3>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
-                <li>• Име на шаблон</li>
-                <li>• Вид атестационна карта</li>
-                <li>• Методика за 1, 1.5 и 2</li>
-                <li>• До 5 custom въпроса за подраздел IV</li>
-                <li>• Системните въпроси за TEACHER остават readonly</li>
-              </ul>
-            </div>
-          </div>
-        </aside>
       </div>
     </main>
   );
