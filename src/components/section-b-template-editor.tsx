@@ -336,50 +336,11 @@ export default function SectionBTemplateEditor({ templateId, title, description 
         <section className="overflow-hidden rounded-4xl border border-rose-200 bg-rose-50 px-6 py-4 text-sm text-rose-700">{errorMessage}</section>
       ) : null}
 
-      <div className="space-y-6">
-        <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Настройка на шаблон</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Базови данни</h2>
-            </div>
-            <div className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
-              Тип карта: {getSectionBCardTypeLabel(cardType)}
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4">
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Вид атестационна карта</span>
-              <select
-                value={cardType}
-                onChange={(event) => handleCardTypeChange(event.target.value)}
-                className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-              >
-                {SECTION_B_CARD_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Име на шаблон</span>
-              <input
-                value={templateName}
-                onChange={(event) => setTemplateName(event.target.value)}
-                className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                placeholder="Например: Учител - основен шаблон"
-              />
-            </label>
-          </div>
-        </section>
-
+      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Custom въпроси</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Допълнителни въпроси</p>
               <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Подраздел IV - 5 въпроса</h2>
               <p className="mt-2 text-sm text-slate-600">
                 Всеки въпрос има скрити методики за 1, 1.5 и 2, които се редактират от pop-up.
@@ -398,14 +359,11 @@ export default function SectionBTemplateEditor({ templateId, title, description 
                 <div key={question.id} className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-2">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">IV.{index + 1}</p>
-                        <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
-                          Методики {questionMethodologyCount}/3
-                        </span>
+                        <p className="text-sm font-medium text-slate-700">Съдържание на въпроса</p>
                       </div>
                       <label className="mt-2 grid gap-2">
-                        <span className="text-sm font-medium text-slate-700">Съдържание на въпроса</span>
                         <input
                           value={question.prompt}
                           onChange={(event) => handleCustomQuestionChange(index, event.target.value)}
@@ -414,27 +372,32 @@ export default function SectionBTemplateEditor({ templateId, title, description 
                         />
                       </label>
 
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {(Object.keys(METHODOLOGY_LABELS) as MethodologyKey[]).map((key) => {
-                          const hasMethodology = question[key].trim().length > 0;
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {(Object.keys(METHODOLOGY_LABELS) as MethodologyKey[]).map((key) => {
+                            const hasMethodology = question[key].trim().length > 0;
 
-                          return (
-                            <button
-                              key={key}
-                              type="button"
-                              onClick={() => openMethodologyEditor(index, key)}
-                              className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition ${
-                                hasMethodology
-                                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                  : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-indigo-700"
-                              }`}
-                            >
-                              <span>{METHODOLOGY_LABELS[key]}</span>
-                              <span className={`h-2 w-2 rounded-full ${hasMethodology ? "bg-emerald-500" : "bg-slate-300"}`} />
-                              <span>{hasMethodology ? "Добавена" : "Празна"}</span>
-                            </button>
-                          );
-                        })}
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => openMethodologyEditor(index, key)}
+                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition ${
+                                  hasMethodology
+                                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                    : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-indigo-700"
+                                }`}
+                              >
+                                <span>{METHODOLOGY_LABELS[key]}</span>
+                                <span className={`h-2 w-2 rounded-full ${hasMethodology ? "bg-emerald-500" : "bg-slate-300"}`} />
+                                <span>{hasMethodology ? "Добавена" : "Празна"}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <span className="self-start rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 sm:self-auto">
+                          Методики {questionMethodologyCount}/3
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -446,26 +409,67 @@ export default function SectionBTemplateEditor({ templateId, title, description 
           <p className="mt-4 text-sm text-slate-600">Допълнителните въпроси не са задължителни, но слотовете са фиксирани до 5.</p>
         </section>
 
-        <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Запис</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Готовност на шаблона</h2>
+        <aside className="space-y-6">
+          <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Настройка на шаблон</p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Базови данни</h2>
+              </div>
+              <div className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+                Тип карта: {getSectionBCardTypeLabel(cardType)}
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={isSaving || isLoading}
-              className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
-            >
-              {isSaving ? "Записване..." : templateId ? "Обнови шаблона" : "Създай шаблона"}
-            </button>
-          </div>
 
-          <div className="mt-4 rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            {saveMessage ?? "Записът вече се прави през API."}
-          </div>
-        </section>
+            <div className="mt-6 grid gap-4">
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-slate-700">Вид атестационна карта</span>
+                <select
+                  value={cardType}
+                  onChange={(event) => handleCardTypeChange(event.target.value)}
+                  className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                >
+                  {SECTION_B_CARD_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-slate-700">Име на шаблон</span>
+                <input
+                  value={templateName}
+                  onChange={(event) => setTemplateName(event.target.value)}
+                  className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  placeholder="Например: Учител - основен шаблон"
+                />
+              </label>
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Запис</p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Готовност на шаблона</h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={isSaving || isLoading}
+                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+              >
+                {isSaving ? "Записване..." : templateId ? "Обнови шаблона" : "Създай шаблона"}
+              </button>
+            </div>
+
+            <div className="mt-4 rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              {saveMessage ?? "Записът вече се прави през API."}
+            </div>
+          </section>
+        </aside>
       </div>
 
       {activeMethodologyEditor && activeQuestion ? (
