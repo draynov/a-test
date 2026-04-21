@@ -24,6 +24,8 @@ type Props = {
   groupedQuestions: GroupedQuestions;
 };
 
+const SECTION_ORDER: ReadonlyArray<SystemQuestion["sectionRoman"]> = ["I", "II", "III", "IV", "V"];
+
 function Chevron({ isOpen }: { isOpen: boolean }) {
   return (
     <svg
@@ -75,7 +77,7 @@ export default function SystemTemplatesAccordion({ groupedQuestions }: Props) {
                   </div>
                 ) : (
                   <div className="space-y-5">
-                    {(["I", "II", "III"] as const).map((sectionRoman) => {
+                    {SECTION_ORDER.map((sectionRoman) => {
                       const sectionQuestions = questionsForType.filter((question) => question.sectionRoman === sectionRoman);
 
                       if (sectionQuestions.length === 0) {
