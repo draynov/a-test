@@ -1,7 +1,23 @@
 -- =========================================================
--- Section B - Director system questions seed (I, II, III)
+-- Section B - ONE SHOT SAFE SQL
+-- Idempotent script: safe to run multiple times
 -- =========================================================
 
+-- 1) Ensure SectionRoman supports V
+DO $$
+BEGIN
+  ALTER TYPE "SectionRoman" ADD VALUE IF NOT EXISTS 'V';
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+-- 2) Ensure per-question methodology columns exist
+ALTER TABLE "SectionBCustomQuestion"
+  ADD COLUMN IF NOT EXISTS "scoreMethodology1" TEXT NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS "scoreMethodology1_5" TEXT NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS "scoreMethodology2" TEXT NOT NULL DEFAULT '';
+
+-- 3) Seed DIRECTOR system questions (I, II, III, IV)
 INSERT INTO "SectionBSystemQuestion" (
   "id",
   "cardType",
@@ -40,3 +56,9 @@ DO UPDATE SET
   "prompt" = EXCLUDED."prompt",
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
+
+-- 4) Optional cleanup (run later, only if you want to remove old columns)
+-- ALTER TABLE "SectionBTemplate"
+--   DROP COLUMN IF EXISTS "scoreMethodology1",
+--   DROP COLUMN IF EXISTS "scoreMethodology1_5",
+--   DROP COLUMN IF EXISTS "scoreMethodology2";
