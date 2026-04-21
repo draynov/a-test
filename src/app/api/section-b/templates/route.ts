@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   const cardType = body.cardType ?? "TEACHER";
 
   if (!isAllowedCardType(cardType)) {
-    return NextResponse.json({ error: "Засега е разрешен само шаблон за учител." }, { status: 400 });
+    return NextResponse.json({ error: "Невалиден тип карта." }, { status: 400 });
   }
 
   const nameError = getTemplateNameValidationError(body.name);

@@ -1,8 +1,36 @@
 import type { AttestationCardType, SectionRoman } from "@prisma/client";
 
-export const SECTION_B_ALLOWED_CARD_TYPES = ["TEACHER"] as const satisfies readonly AttestationCardType[];
+export const SECTION_B_ALLOWED_CARD_TYPES = [
+  "TEACHER",
+  "EDUCATOR",
+  "DIRECTOR",
+  "DEPUTY_DIRECTOR",
+  "PSYCHOLOGIST_COUNSELOR",
+] as const satisfies readonly AttestationCardType[];
 
 export type SectionBTemplateCardType = (typeof SECTION_B_ALLOWED_CARD_TYPES)[number];
+
+export const SECTION_B_CARD_TYPE_LABELS: Record<SectionBTemplateCardType, string> = {
+  TEACHER: "Учител",
+  EDUCATOR: "Възпитател",
+  DIRECTOR: "Директор",
+  DEPUTY_DIRECTOR: "Заместник-директор",
+  PSYCHOLOGIST_COUNSELOR: "Психолог и педагогически съветник",
+};
+
+export type SectionBCardTypeOption = {
+  value: SectionBTemplateCardType;
+  label: string;
+};
+
+export const SECTION_B_CARD_TYPE_OPTIONS: readonly SectionBCardTypeOption[] = SECTION_B_ALLOWED_CARD_TYPES.map((value) => ({
+  value,
+  label: SECTION_B_CARD_TYPE_LABELS[value],
+}));
+
+export function getSectionBCardTypeLabel(cardType: SectionBTemplateCardType) {
+  return SECTION_B_CARD_TYPE_LABELS[cardType];
+}
 
 export type SectionBCustomQuestionInput = {
   prompt: string;

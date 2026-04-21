@@ -11,7 +11,7 @@ export default async function EditTemplatePage({ params }: Props) {
     <SectionBTemplateEditor
       templateId={templateId}
       title="Редакция на шаблон за атестация"
-      description="Отвори съществуващ TEACHER шаблон, промени методиката или custom въпросите и го запази отново."
+      description="Отвори съществуващ шаблон, промени вида на картата, методиката или custom въпросите и го запази отново."
     />
   );
 }

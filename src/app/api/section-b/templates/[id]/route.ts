@@ -70,7 +70,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const cardType = body.cardType ?? existingTemplate.cardType;
 
   if (!isAllowedCardType(cardType)) {
-    return NextResponse.json({ error: "Засега е разрешен само шаблон за учител." }, { status: 400 });
+    return NextResponse.json({ error: "Невалиден тип карта." }, { status: 400 });
   }
 
   const nameError = getTemplateNameValidationError(body.name);

@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getSectionBCardTypeLabel } from "@/lib/section-b-template";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -11,7 +12,6 @@ export default async function TemplatesPage() {
   }
 
   const templates = await prisma.sectionBTemplate.findMany({
-    where: { cardType: "TEACHER" },
     include: {
       customQuestions: {
         orderBy: { displayOrder: "asc" },
@@ -56,7 +56,9 @@ export default async function TemplatesPage() {
           <article key={template.id} className="rounded-4xl border border-slate-200 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)]">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">TEACHER</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                  {getSectionBCardTypeLabel(template.cardType)}
+                </p>
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{template.name}</h2>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">

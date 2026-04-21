@@ -30,7 +30,10 @@ enum ProfessionalQualification {
 
 enum AttestationCardType {
   TEACHER
+  EDUCATOR
   DIRECTOR
+  DEPUTY_DIRECTOR
+  PSYCHOLOGIST_COUNSELOR
 }
 
 enum SectionRoman {
