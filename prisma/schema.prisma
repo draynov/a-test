@@ -28,30 +28,201 @@ enum ProfessionalQualification {
   I_PKS
 }
 
+enum AttestationCardType {
+  TEACHER
+  DIRECTOR
+}
+
+enum SectionRoman {
+  I
+  II
+  III
+  IV
+}
+
+enum SectionBWorkflowStatus {
+  DRAFT
+  ASSESSED_SUBMITTED
+  COMMITTEE_IN_PROGRESS
+  COMPLETED
+}
+
+enum SectionBScore {
+  SCORE_1
+  SCORE_1_5
+  SCORE_2
+}
+
+enum CommissionMemberRole {
+  PRESIDENT
+  INSTITUTION_REP
+  RUO_REP
+  OPTIONAL
+}
+
 model AttestationCard {
-  id                String         @id @default(cuid())
+  id                String                  @id @default(cuid())
+  cardType          AttestationCardType     @default(TEACHER)
   firstInitial      EducationLevel
   otherAfterInitial EducationLevel?
-  baseSpecialty     String?        @db.VarChar(255)
-  hasTeacherQualification Boolean   @default(false)
-  hasAdditionalQualification Boolean @default(false)
+  baseSpecialty     String?                 @db.VarChar(255)
+  hasTeacherQualification Boolean            @default(false)
+  hasAdditionalQualification Boolean         @default(false)
   latestProfessionalQualification ProfessionalQualification?
-  laborExperienceYears Int          @default(0)
-  teachingExperienceYears Int       @default(0)
-  internalQualificationHours Int     @default(0)
-  mandatoryQualificationHours Int    @default(0)
-  mandatoryQualificationCredits Int  @default(0)
-  recommendationsImplemented Boolean @default(false)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+  laborExperienceYears Int                  @default(0)
+  teachingExperienceYears Int               @default(0)
+  internalQualificationHours Int            @default(0)
+  mandatoryQualificationHours Int           @default(0)
+  mandatoryQualificationCredits Int         @default(0)
+  recommendationsImplemented Boolean        @default(false)
+  sectionBTemplateId String?
+  sectionBTemplate   SectionBTemplate?      @relation(fields: [sectionBTemplateId], references: [id])
+  sectionBStatus     SectionBWorkflowStatus @default(DRAFT)
+  sectionBAssessedSystemResponses SectionBAssessedSystemResponse[]
+  sectionBAssessedCustomResponses SectionBAssessedCustomResponse[]
+  sectionBCommitteeMembers        SectionBCommissionMember[]
+  sectionBCommitteeSystemResponses SectionBCommitteeSystemResponse[]
+  sectionBCommitteeCustomResponses SectionBCommitteeCustomResponse[]
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String                    @id @default(cuid())
+  email        String                    @unique
   passwordHash String
   name         String?
-  role         String   @default("USER")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         String                    @default("USER")
+  sectionBCommissionMemberships SectionBCommissionMember[]
+  sectionBCommitteeSystemResponses SectionBCommitteeSystemResponse[]
+  sectionBCommitteeCustomResponses SectionBCommitteeCustomResponse[]
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+}
+
+model SectionBSystemQuestion {
+  id          String              @id @default(cuid())
+  cardType    AttestationCardType
+  sectionRoman SectionRoman
+  questionCode String             @db.VarChar(20)
+  prompt      String              @db.Text
+  displayOrder Int
+  maxPoints   Int?
+  assessedResponses SectionBAssessedSystemResponse[]
+  committeeResponses SectionBCommitteeSystemResponse[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@unique([cardType, questionCode])
+  @@unique([cardType, displayOrder])
+}
+
+model SectionBTemplate {
+  id                    String              @id @default(cuid())
+  name                  String              @db.VarChar(150)
+  cardType              AttestationCardType
+  scoreMethodology1     String              @db.Text
+  scoreMethodology1_5   String              @db.Text
+  scoreMethodology2     String              @db.Text
+  customQuestions       SectionBCustomQuestion[]
+  attestationCards      AttestationCard[]
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@unique([name, cardType])
+}
+
+model SectionBCustomQuestion {
+  id          String            @id @default(cuid())
+  templateId  String
+  template    SectionBTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  sectionRoman SectionRoman     @default(IV)
+  questionCode String           @db.VarChar(20)
+  prompt      String            @db.Text
+  displayOrder Int
+  assessedResponses SectionBAssessedCustomResponse[]
+  committeeResponses SectionBCommitteeCustomResponse[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([templateId, questionCode])
+  @@unique([templateId, displayOrder])
+}
+
+model SectionBCommissionMember {
+  id                String               @id @default(cuid())
+  attestationCardId String
+  attestationCard   AttestationCard      @relation(fields: [attestationCardId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role              CommissionMemberRole
+  displayOrder      Int
+  isRequired        Boolean              @default(true)
+  systemResponses   SectionBCommitteeSystemResponse[]
+  customResponses   SectionBCommitteeCustomResponse[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@unique([attestationCardId, userId])
+  @@unique([attestationCardId, displayOrder])
+}
+
+model SectionBAssessedSystemResponse {
+  id                String               @id @default(cuid())
+  attestationCardId String
+  attestationCard   AttestationCard      @relation(fields: [attestationCardId], references: [id], onDelete: Cascade)
+  questionId        String
+  question          SectionBSystemQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  score             SectionBScore
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@unique([attestationCardId, questionId])
+}
+
+model SectionBAssessedCustomResponse {
+  id                String              @id @default(cuid())
+  attestationCardId String
+  attestationCard   AttestationCard     @relation(fields: [attestationCardId], references: [id], onDelete: Cascade)
+  questionId        String
+  question          SectionBCustomQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  score             SectionBScore
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@unique([attestationCardId, questionId])
+}
+
+model SectionBCommitteeSystemResponse {
+  id                String                 @id @default(cuid())
+  attestationCardId String
+  attestationCard   AttestationCard        @relation(fields: [attestationCardId], references: [id], onDelete: Cascade)
+  memberId          String
+  member            SectionBCommissionMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  evaluatorId       String
+  evaluator         User                   @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+  questionId        String
+  question          SectionBSystemQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  score             SectionBScore
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@unique([memberId, questionId])
+}
+
+model SectionBCommitteeCustomResponse {
+  id                String                 @id @default(cuid())
+  attestationCardId String
+  attestationCard   AttestationCard        @relation(fields: [attestationCardId], references: [id], onDelete: Cascade)
+  memberId          String
+  member            SectionBCommissionMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  evaluatorId       String
+  evaluator         User                   @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+  questionId        String
+  question          SectionBCustomQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  score             SectionBScore
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@unique([memberId, questionId])
 }
