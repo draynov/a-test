@@ -91,6 +91,12 @@ const navItems = [
     icon: BuildingIcon,
   },
   {
+    href: "/app/staff",
+    label: "Служители",
+    startsWith: "/app/staff",
+    icon: UsersIcon,
+  },
+  {
     href: "/app/ruo-predstaviteli",
     label: "РУО представители",
     startsWith: "/app/ruo-predstaviteli",
