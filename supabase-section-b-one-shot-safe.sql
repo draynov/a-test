@@ -157,7 +157,47 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 7) Optional cleanup (run later, only if you want to remove old columns)
+-- 7) Seed DEPUTY_DIRECTOR system questions (I, II, III, IV)
+INSERT INTO "SectionBSystemQuestion" (
+  "id",
+  "cardType",
+  "sectionRoman",
+  "questionCode",
+  "prompt",
+  "displayOrder",
+  "maxPoints",
+  "createdAt",
+  "updatedAt"
+)
+VALUES
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.1', 'Подпомага директора при разработване на стратегията за развитие на институцията.', 1, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2', 'Участва в годишното оперативно планиране.', 2, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.3', 'Участва в изготвянето на вътрешните документи за ефективното функциониране на институцията.', 3, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.1', 'Участва в изготвянето на Списък-образец № 1/№ 2/№ 3.', 4, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.2', 'Съдейства за осигуряването на обща и допълнителна подкрепа на деца и ученици.', 5, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.3', 'Осъществява дейности по осигуряване на учебна документация, учебници, учебни помагала, познавателни книжки.', 6, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.4', 'Подпомага функционирането на организационните структури в училището/детската градина (комисии, екипи, съвети и др.). Прилага компетентностния подход в работата си при придобиване на ключови компетентности от децата/учениците съгласно чл. 77, ал. 1 от ЗПУО.', 7, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.5', 'Участва в процедури за вътрешна оценка на качеството на образованието в институцията.', 8, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.2.6', 'След изготвяне на анализ разработва и предлага на директора система за вътрешноинституционална квалификация.', 9, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.3.1', 'Участва в контрола на качеството на образователния процес и на поддържането на материалната база на институцията.', 10, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.3.2', 'Участва в контрола на подготовката на учениците с цел повишаване на резултатите им в образователния процес.', 11, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'I', 'I.3.3', 'Осъществява ефективен педагогически и административен контрол на процесите и дейностите в институцията.', 12, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'II', 'II.1', 'Подпомага директора в дейностите за повишаване на квалификацията на учителите, участието им в иновативни дейности и наставничество.', 13, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'II', 'II.2', 'Съдейства за управлението на финансовите и материалните ресурси, както и на информационните потоци и осигуряване на безопасни и здравословни условия на обучение и труд.', 14, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'II', 'II.3', 'Оценява собственото си професионално развитие, преценява необходимостта от повишаване на квалификацията си и се включва в квалификационни форми, свързани с целите на институцията или професионалната област, и има задължителните за атестационния период брой квалификационни кредити.', 15, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'II', 'II.4', 'Участва във форми на вътрешноинституционална квалификация, прилага, популяризира и представя иновативни практики.', 16, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'III', 'III.1', 'Познава и прилага нормативната уредба за системата на предучилищното и училищното образование, включително документацията на институцията.', 17, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'III', 'III.2', 'Съдейства на контролни органи и институции при осъществяване на контрол и инспектиране.', 18, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'IV', 'IV.1', 'Взаимодейства ефективно с обществения съвет, настоятелството, социалните партньори и други институции. Участва в дейността на национални, областни, общински комисии, свързани с разработване и изпълнение на основни образователни политики или проекти.', 19, NULL, now(), now()),
+  (gen_random_uuid()::text, 'DEPUTY_DIRECTOR', 'IV', 'IV.2', 'Взаимодейства ефективно с родителите.', 20, NULL, now(), now())
+ON CONFLICT ("cardType", "questionCode")
+DO UPDATE SET
+  "sectionRoman" = EXCLUDED."sectionRoman",
+  "prompt" = EXCLUDED."prompt",
+  "displayOrder" = EXCLUDED."displayOrder",
+  "updatedAt" = now();
+
+-- 8) Optional cleanup (run later, only if you want to remove old columns)
 -- ALTER TABLE "SectionBTemplate"
 --   DROP COLUMN IF EXISTS "scoreMethodology1",
 --   DROP COLUMN IF EXISTS "scoreMethodology1_5",
