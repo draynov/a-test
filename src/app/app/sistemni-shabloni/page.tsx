@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import SystemTemplatesAccordion from "@/components/system-templates-accordion";
+import SystemTemplatesTabs from "@/components/system-templates-tabs";
 import { prisma } from "@/lib/prisma";
 import {
   type SectionBTemplateCardType,
@@ -78,7 +78,7 @@ export default async function SystemTemplatesPage() {
         </div>
       </header>
 
-      <SystemTemplatesAccordion groupedQuestions={groupedQuestions} />
+      <SystemTemplatesTabs groupedQuestions={groupedQuestions} />
     </main>
   );
 }
