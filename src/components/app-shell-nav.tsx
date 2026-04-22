@@ -63,6 +63,14 @@ function SyncIcon(props: IconProps) {
   );
 }
 
+function BuildingIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V8h2V5h8v3h2v13h2M9 13h1v4H9M14 13h1v4h-1M9 9h1v1H9M14 9h1v1h-1" />
+    </svg>
+  );
+}
+
 const navItems = [
   {
     href: "/app/attestirane/karti",
@@ -75,6 +83,12 @@ const navItems = [
     label: "Настройки",
     startsWith: "/app/nastroiki",
     icon: SettingsIcon,
+  },
+  {
+    href: "/app/institucii",
+    label: "Институции",
+    startsWith: "/app/institucii",
+    icon: BuildingIcon,
   },
   {
     href: "/app/shabloni",

@@ -99,10 +99,25 @@ model User {
   name         String?
   role         String                    @default("USER")
   sectionBCommissionMemberships SectionBCommissionMember[]
+    createdInstitutions Institution[]
   sectionBCommitteeSystemResponses SectionBCommitteeSystemResponse[]
   sectionBCommitteeCustomResponses SectionBCommitteeCustomResponse[]
   createdAt    DateTime                  @default(now())
   updatedAt    DateTime                  @updatedAt
+}
+
+model Institution {
+  id              String   @id @default(cuid())
+  neispuoCode     String   @unique @db.VarChar(50)
+  name            String   @db.VarChar(255)
+  municipality    String   @db.VarChar(100)
+  createdBy       String?
+  user            User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  templates       SectionBTemplate[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([createdBy])
 }
 
 model SectionBSystemQuestion {
@@ -126,6 +141,8 @@ model SectionBTemplate {
   id                    String              @id @default(cuid())
   name                  String              @db.VarChar(150)
   cardType              AttestationCardType
+    institutionId         String?
+    institution           Institution?        @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   customQuestions       SectionBCustomQuestion[]
   attestationCards      AttestationCard[]
   createdAt             DateTime            @default(now())
