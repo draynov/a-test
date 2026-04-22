@@ -92,7 +92,7 @@ const navItems = [
   },
   {
     href: "/app/staff",
-    label: "Staff",
+    label: "Служители",
     startsWith: "/app/staff",
     icon: UsersIcon,
   },

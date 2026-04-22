@@ -5,7 +5,7 @@ import StaffPageClient from './page-client';
 
 export const metadata = {
   title: 'Управление на служители',
-  description: 'Staff регистър на институциите',
+  description: 'Регистър на служителите по институции',
 };
 
 export default async function StaffPage() {
@@ -40,13 +40,13 @@ export default async function StaffPage() {
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6">
-      <header className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-700">Staff</p>
+      <header className="overflow-hidden rounded-4xl border border-white/70 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-700">Служители</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Управление на служители</h1>
         <p className="mt-2 text-sm text-slate-600">Кадрови регистър по институции (без login привързване).</p>
       </header>
 
-      <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
+      <section className="overflow-hidden rounded-4xl border border-white/70 bg-white/95 p-6 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.24)]">
         <StaffPageClient initialStaff={staff} institutions={institutions} />
       </section>
     </main>
