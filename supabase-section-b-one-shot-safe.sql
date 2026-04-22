@@ -204,7 +204,47 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 8) Optional cleanup (run later, only if you want to remove old columns)
+-- 8) Seed REHABILITATOR_TRAINER system questions (I, II, III)
+INSERT INTO "SectionBSystemQuestion" (
+  "id",
+  "cardType",
+  "sectionRoman",
+  "questionCode",
+  "prompt",
+  "displayOrder",
+  "maxPoints",
+  "createdAt",
+  "updatedAt"
+)
+VALUES
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.1', 'Залага ясни и конкретни цели при планирането на дейността и предвижда възможност за преструктуриране и промяна на годишното планиране – при необходимост.', 1, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.2', 'Планира дейности за обща и допълнителна подкрепа за личностно развитие на децата/учениците.', 2, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.3', 'Планира иновативни методи и подходящ инструментариум за оценка и превенция на обучителни затруднения и за формиране на социални умения.', 3, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.2.1', 'Проследява напредъка в развитието на децата/учениците с цел постигане на планираните резултати в съответствие с потребностите, способностите и интересите им и формираните ключови компетентности.', 4, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.2.2', 'Използва ефективно иновативни и интерактивни методи за индивидуална и групова работа, като формира и развива основни социални умения. Прилага компетентностен подход в работата си при придобиване на ключови компетентности от децата/учениците съгласно чл. 77, ал. 1 от ЗПУО.', 5, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.2.3', 'Подбира и прилага подходящи методи, средства и дидактически материали за реализиране на поставените цели, включително създадени от самия него.', 6, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.2.4', 'Спазва и контролира спазването на книжовно-езиковите норми на българския език в процеса на обучение, възпитание и социализация на децата и учениците.', 7, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.3.1', 'Използва подходящи методи и форми за проверка и оценка (диагностика) на постигнатите от децата/учениците индивидуални/групови резултати.', 8, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.3.2', 'Проследява и анализира постигнатите резултати като осигурява обща и/или допълнителна подкрепа за личностно развитие.', 9, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.3.3', 'Информира родителите за постигнатите резултати; дефинира цели и мерки за подкрепа на база индивидуалния напредък на детето/ученика.', 10, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.4.1', 'Ръководи групата или работи индивидуално с дете/ученик в съответствие с етичния кодекс на училищната общност.', 11, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'I', 'I.4.2', 'Осигурява сигурна и подходяща физическа, психологическа и социална среда за подкрепа и развитие на децата и учениците и формира отношения на загриженост и ефективна комуникация между всички участници в образователния процес.', 12, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'II', 'II.1', 'Участва в разработването и изпълнението на стратегията на институцията и спомага за нейното актуализиране.', 13, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'II', 'II.2.1', 'Има изградени ефективни професионални взаимоотношения с участниците в образователния процес в институцията и всички заинтересовани страни, като взема активно участие в работата на педагогическия съвет, екипи и комисии, методически обединения; участва в работа по проекти и програми.', 14, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'II', 'II.2.2', 'Активно участва в организирането и провеждането на извънурочни и извънкласни форми на обучение.', 15, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'II', 'II.2.3', 'Взаимодейства активно за приобщаване на родителите в образователния процес и е диалогичен с родителската общност.', 16, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'II', 'II.3', 'Осъществява методическа и организационна подкрепа на новоназначени педагогически специалисти. Участва в дейността на национални, областни, общински комисии, свързани с разработване и изпълнение на основни образователни политики или проекти.', 17, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'III', 'III.1', 'Оценява професионалното си развитие, както и необходимостта от повишаване на квалификацията си по теми, свързани с приоритетите на институцията и има задължителните квалификационни кредити.', 18, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'III', 'III.2', 'Професионално изпълнява задълженията си съгласно длъжностната характеристика и участва във форми на квалификация.', 19, NULL, now(), now()),
+  (gen_random_uuid()::text, 'REHABILITATOR_TRAINER', 'III', 'III.3', 'Познава и прилага нормативната уредба в системата на предучилищното и училищното образование, учебната документация и документите на институцията.', 20, NULL, now(), now())
+ON CONFLICT ("cardType", "questionCode")
+DO UPDATE SET
+  "sectionRoman" = EXCLUDED."sectionRoman",
+  "prompt" = EXCLUDED."prompt",
+  "displayOrder" = EXCLUDED."displayOrder",
+  "updatedAt" = now();
+
+-- 9) Optional cleanup (run later, only if you want to remove old columns)
 -- ALTER TABLE "SectionBTemplate"
 --   DROP COLUMN IF EXISTS "scoreMethodology1",
 --   DROP COLUMN IF EXISTS "scoreMethodology1_5",
