@@ -3,7 +3,29 @@
 -- Idempotent script: safe to run multiple times
 -- =========================================================
 
--- 1) Ensure SectionRoman supports V
+-- 1) Ensure AttestationCardType supports all required values
+DO $$
+BEGIN
+  ALTER TYPE "AttestationCardType" ADD VALUE IF NOT EXISTS 'EDUCATOR';
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER TYPE "AttestationCardType" ADD VALUE IF NOT EXISTS 'DEPUTY_DIRECTOR';
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER TYPE "AttestationCardType" ADD VALUE IF NOT EXISTS 'PSYCHOLOGIST_COUNSELOR';
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+-- 2) Ensure SectionRoman supports V
 DO $$
 BEGIN
   ALTER TYPE "SectionRoman" ADD VALUE IF NOT EXISTS 'V';
@@ -11,13 +33,13 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
--- 2) Ensure per-question methodology columns exist
+-- 3) Ensure per-question methodology columns exist
 ALTER TABLE "SectionBCustomQuestion"
   ADD COLUMN IF NOT EXISTS "scoreMethodology1" TEXT NOT NULL DEFAULT '',
   ADD COLUMN IF NOT EXISTS "scoreMethodology1_5" TEXT NOT NULL DEFAULT '',
   ADD COLUMN IF NOT EXISTS "scoreMethodology2" TEXT NOT NULL DEFAULT '';
 
--- 3) Seed DIRECTOR system questions (I, II, III, IV)
+-- 4) Seed DIRECTOR system questions (I, II, III, IV)
 INSERT INTO "SectionBSystemQuestion" (
   "id",
   "cardType",
@@ -57,7 +79,7 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 4) Seed PSYCHOLOGIST_COUNSELOR system questions (I, II, III)
+-- 5) Seed PSYCHOLOGIST_COUNSELOR system questions (I, II, III)
 INSERT INTO "SectionBSystemQuestion" (
   "id",
   "cardType",
@@ -95,7 +117,7 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 5) Optional cleanup (run later, only if you want to remove old columns)
+-- 6) Optional cleanup (run later, only if you want to remove old columns)
 -- ALTER TABLE "SectionBTemplate"
 --   DROP COLUMN IF EXISTS "scoreMethodology1",
 --   DROP COLUMN IF EXISTS "scoreMethodology1_5",
