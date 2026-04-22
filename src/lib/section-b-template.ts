@@ -6,6 +6,7 @@ export const SECTION_B_ALLOWED_CARD_TYPES = [
   "DIRECTOR",
   "DEPUTY_DIRECTOR",
   "PSYCHOLOGIST_COUNSELOR",
+  "REHABILITATOR_TRAINER",
 ] as const satisfies readonly AttestationCardType[];
 
 export type SectionBTemplateCardType = (typeof SECTION_B_ALLOWED_CARD_TYPES)[number];
@@ -16,6 +17,7 @@ export const SECTION_B_CARD_TYPE_LABELS: Record<SectionBTemplateCardType, string
   DIRECTOR: "Директор",
   DEPUTY_DIRECTOR: "Заместник-директор",
   PSYCHOLOGIST_COUNSELOR: "Психолог / П. съветник",
+  REHABILITATOR_TRAINER: "Рехабилитатор, треньор...",
 };
 
 export type SectionBCardTypeOption = {
@@ -55,6 +57,10 @@ const SECTION_B_ADDITIONAL_CRITERIA_CONFIG: Record<SectionBTemplateCardType, Sec
     sectionRoman: "IV",
   },
   PSYCHOLOGIST_COUNSELOR: {
+    title: "Критерии, определени от директора на институцията",
+    sectionRoman: "IV",
+  },
+  REHABILITATOR_TRAINER: {
     title: "Критерии, определени от директора на институцията",
     sectionRoman: "IV",
   },

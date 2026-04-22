@@ -23,3 +23,10 @@ BEGIN
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
+
+DO $$
+BEGIN
+  ALTER TYPE "AttestationCardType" ADD VALUE IF NOT EXISTS 'REHABILITATOR_TRAINER';
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;

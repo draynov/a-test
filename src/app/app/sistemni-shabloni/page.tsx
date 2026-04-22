@@ -27,6 +27,7 @@ function groupQuestions(questions: SystemQuestion[]): GroupedQuestions {
     DIRECTOR: [],
     DEPUTY_DIRECTOR: [],
     PSYCHOLOGIST_COUNSELOR: [],
+    REHABILITATOR_TRAINER: [],
   };
 
   questions.forEach((question) => {
