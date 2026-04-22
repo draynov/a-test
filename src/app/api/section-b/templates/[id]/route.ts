@@ -28,6 +28,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const template = await prisma.sectionBTemplate.findUnique({
     where: { id },
     include: {
+      institution: {
+        select: {
+          id: true,
+          name: true,
+          createdBy: true,
+        },
+      },
       customQuestions: {
         orderBy: { displayOrder: "asc" },
       },
@@ -36,6 +43,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   if (!template) {
     return NextResponse.json({ error: "Шаблонът не е намерен." }, { status: 404 });
+  }
+
+  if (session.user.role === "TECHNICAL_SECRETARY" && template.institution?.createdBy !== session.user.id) {
+    return NextResponse.json({ error: "Нямаш достъп до този шаблон." }, { status: 403 });
   }
 
   return NextResponse.json({ template });
@@ -56,6 +67,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const existingTemplate = await prisma.sectionBTemplate.findUnique({
     where: { id },
     include: {
+      institution: {
+        select: {
+          id: true,
+          createdBy: true,
+        },
+      },
       customQuestions: true,
     },
   });
@@ -64,12 +81,34 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Шаблонът не е намерен." }, { status: 404 });
   }
 
+  if (session.user.role === "TECHNICAL_SECRETARY" && existingTemplate.institution?.createdBy !== session.user.id) {
+    return NextResponse.json({ error: "Нямаш достъп до този шаблон." }, { status: 403 });
+  }
+
   const rawBody = await request.text();
   const body = rawBody ? (JSON.parse(rawBody) as Partial<SectionBTemplateInput>) : {};
   const cardType = body.cardType ?? existingTemplate.cardType;
+  const institutionId = body.institutionId?.trim() ?? existingTemplate.institutionId ?? "";
 
   if (!isAllowedCardType(cardType)) {
     return NextResponse.json({ error: "Невалиден тип карта." }, { status: 400 });
+  }
+
+  if (!institutionId) {
+    return NextResponse.json({ error: "Институцията е задължителна." }, { status: 400 });
+  }
+
+  const institution = await prisma.institution.findUnique({
+    where: { id: institutionId },
+    select: { id: true, createdBy: true },
+  });
+
+  if (!institution) {
+    return NextResponse.json({ error: "Избраната институция не е намерена." }, { status: 404 });
+  }
+
+  if (session.user.role === "TECHNICAL_SECRETARY" && institution.createdBy !== session.user.id) {
+    return NextResponse.json({ error: "Нямаш права за тази институция." }, { status: 403 });
   }
 
   const nameError = getTemplateNameValidationError(body.name);
@@ -96,6 +135,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       data: {
         name: normalizeTemplateName(body.name),
         cardType,
+        institutionId,
         customQuestions: {
           create: customQuestions
             .filter((question) => question.prompt.length > 0)
@@ -111,6 +151,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         },
       },
       include: {
+        institution: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         customQuestions: {
           orderBy: { displayOrder: "asc" },
         },
@@ -133,6 +179,25 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   }
 
   const { id } = await params;
+
+  const template = await prisma.sectionBTemplate.findUnique({
+    where: { id },
+    include: {
+      institution: {
+        select: {
+          createdBy: true,
+        },
+      },
+    },
+  });
+
+  if (!template) {
+    return NextResponse.json({ error: "Шаблонът не е намерен." }, { status: 404 });
+  }
+
+  if (session.user.role === "TECHNICAL_SECRETARY" && template.institution?.createdBy !== session.user.id) {
+    return NextResponse.json({ error: "Нямаш достъп до този шаблон." }, { status: 403 });
+  }
 
   await prisma.sectionBTemplate.delete({
     where: { id },

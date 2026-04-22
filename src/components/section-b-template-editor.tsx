@@ -36,9 +36,17 @@ type ApiTemplate = {
   id: string;
   name: string;
   cardType: SectionBTemplateCardType;
+  institutionId: string | null;
   customQuestions: ApiCustomQuestion[];
   createdAt: string;
   updatedAt: string;
+};
+
+type InstitutionOption = {
+  id: string;
+  name: string;
+  neispuoCode: string;
+  municipality: string;
 };
 
 type MethodologyEditorState = {
@@ -122,6 +130,8 @@ function mapApiQuestionsToSlots(questions: ApiCustomQuestion[]) {
 
 export default function SectionBTemplateEditor({ templateId, title, description }: TemplateEditorProps) {
   const [cardType, setCardType] = useState<SectionBTemplateCardType>("TEACHER");
+  const [institutionId, setInstitutionId] = useState("");
+  const [institutions, setInstitutions] = useState<InstitutionOption[]>([]);
   const [templateName, setTemplateName] = useState("");
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>(createCustomQuestionSlots());
   const [isLoading, setIsLoading] = useState(true);
@@ -151,6 +161,20 @@ export default function SectionBTemplateEditor({ templateId, title, description 
         setIsLoading(true);
         setErrorMessage(null);
 
+        const institutionsResponse = await fetch("/api/institutions", { cache: "no-store" });
+
+        if (!institutionsResponse.ok) {
+          throw new Error("Неуспешно зареждане на институциите.");
+        }
+
+        const institutionsData = (await institutionsResponse.json()) as InstitutionOption[];
+
+        if (!isMounted) {
+          return;
+        }
+
+        setInstitutions(institutionsData);
+
         if (templateId) {
           const templateResponse = await fetch(`/api/section-b/templates/${templateId}`, { cache: "no-store" });
           const templateData = (await templateResponse.json()) as { template?: ApiTemplate; error?: string };
@@ -171,10 +195,12 @@ export default function SectionBTemplateEditor({ templateId, title, description 
 
           setTemplateName(template.name);
           setCardType(template.cardType);
+          setInstitutionId(template.institutionId ?? institutionsData[0]?.id ?? "");
           setCustomQuestions(mapApiQuestionsToSlots(template.customQuestions));
           setSaveMessage(`Шаблонът "${template.name}" е зареден за редакция.`);
         } else if (isMounted) {
           setTemplateName("Шаблон за учител");
+          setInstitutionId(institutionsData[0]?.id ?? "");
           setCustomQuestions(createCustomQuestionSlots());
           setSaveMessage(null);
         }
@@ -253,9 +279,15 @@ export default function SectionBTemplateEditor({ templateId, title, description 
       return;
     }
 
+    if (!institutionId) {
+      setSaveMessage("Избери институция.");
+      return;
+    }
+
     const payload = {
       name: templateName,
       cardType,
+      institutionId,
       customQuestions: customQuestions.map((question) => ({
         prompt: question.prompt.trim(),
         sectionRoman: additionalCriteriaConfig.sectionRoman,
@@ -452,6 +484,22 @@ export default function SectionBTemplateEditor({ templateId, title, description 
                   className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
                   placeholder="Например: Учител - основен шаблон"
                 />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-slate-700">Институция</span>
+                <select
+                  value={institutionId}
+                  onChange={(event) => setInstitutionId(event.target.value)}
+                  className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                >
+                  {institutions.length === 0 ? <option value="">Няма налични институции</option> : null}
+                  {institutions.map((institution) => (
+                    <option key={institution.id} value={institution.id}>
+                      {institution.name} ({institution.neispuoCode})
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
           </section>

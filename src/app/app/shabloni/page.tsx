@@ -11,8 +11,35 @@ export default async function TemplatesPage() {
     redirect("/login");
   }
 
+  let institutionFilterId: string | undefined;
+
+  if (session.user.role === "TECHNICAL_SECRETARY") {
+    const ownInstitution = await prisma.institution.findFirst({
+      where: { createdBy: session.user.id },
+      select: { id: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (!ownInstitution) {
+      institutionFilterId = "__NO_INSTITUTION__";
+    } else {
+      institutionFilterId = ownInstitution.id;
+    }
+  }
+
   const templates = await prisma.sectionBTemplate.findMany({
+    where: institutionFilterId
+      ? institutionFilterId === "__NO_INSTITUTION__"
+        ? { id: "__NO_TEMPLATE__" }
+        : { institutionId: institutionFilterId }
+      : undefined,
     include: {
+      institution: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       customQuestions: {
         orderBy: { displayOrder: "asc" },
       },
@@ -80,6 +107,9 @@ export default async function TemplatesPage() {
                   {getSectionBCardTypeLabel(template.cardType)}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{template.name}</h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Институция: {template.institution?.name ?? "Не е зададена"}
+                </p>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                 {additionalCriteriaConfig.sectionRoman}: {questionCount}/5

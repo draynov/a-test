@@ -81,6 +81,7 @@ export type SectionBCustomQuestionInput = {
 export type SectionBTemplateInput = {
   name: string;
   cardType: SectionBTemplateCardType;
+  institutionId: string;
   customQuestions: SectionBCustomQuestionInput[];
 };
 

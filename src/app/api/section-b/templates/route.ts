@@ -25,15 +25,41 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const cardType = url.searchParams.get("cardType") ?? "TEACHER";
+  const requestedInstitutionId = url.searchParams.get("institutionId") ?? undefined;
 
   if (!isAllowedCardType(cardType)) {
     return NextResponse.json({ error: "Невалиден тип карта." }, { status: 400 });
   }
 
+  let institutionId = requestedInstitutionId;
+
+  if (session.user.role === "TECHNICAL_SECRETARY") {
+    const ownInstitution = await prisma.institution.findFirst({
+      where: { createdBy: session.user.id },
+      select: { id: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (!ownInstitution) {
+      return NextResponse.json({ templates: [], systemQuestions: [] });
+    }
+
+    institutionId = ownInstitution.id;
+  }
+
   const [templates, systemQuestions] = await Promise.all([
     prisma.sectionBTemplate.findMany({
-      where: { cardType },
+      where: {
+        cardType,
+        ...(institutionId ? { institutionId } : {}),
+      },
       include: {
+        institution: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         customQuestions: {
           orderBy: { displayOrder: "asc" },
         },
@@ -66,9 +92,27 @@ export async function POST(request: Request) {
   const rawBody = await request.text();
   const body = rawBody ? (JSON.parse(rawBody) as Partial<SectionBTemplateInput>) : {};
   const cardType = body.cardType ?? "TEACHER";
+  const institutionId = body.institutionId?.trim();
 
   if (!isAllowedCardType(cardType)) {
     return NextResponse.json({ error: "Невалиден тип карта." }, { status: 400 });
+  }
+
+  if (!institutionId) {
+    return NextResponse.json({ error: "Институцията е задължителна." }, { status: 400 });
+  }
+
+  const institution = await prisma.institution.findUnique({
+    where: { id: institutionId },
+    select: { id: true, createdBy: true },
+  });
+
+  if (!institution) {
+    return NextResponse.json({ error: "Избраната институция не е намерена." }, { status: 404 });
+  }
+
+  if (session.user.role === "TECHNICAL_SECRETARY" && institution.createdBy !== session.user.id) {
+    return NextResponse.json({ error: "Нямаш права за тази институция." }, { status: 403 });
   }
 
   const nameError = getTemplateNameValidationError(body.name);
@@ -89,6 +133,7 @@ export async function POST(request: Request) {
     where: {
       name: normalizeTemplateName(body.name),
       cardType,
+      institutionId,
     },
   });
 
@@ -100,6 +145,7 @@ export async function POST(request: Request) {
     data: {
       name: normalizeTemplateName(body.name),
       cardType,
+      institutionId,
       customQuestions: {
         create: customQuestions
           .filter((question) => question.prompt.length > 0)
@@ -115,6 +161,12 @@ export async function POST(request: Request) {
       },
     },
     include: {
+      institution: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       customQuestions: {
         orderBy: { displayOrder: "asc" },
       },
