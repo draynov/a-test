@@ -29,6 +29,103 @@ BEGIN
   END IF;
 END $$;
 
+-- 5) RUO offices and representatives registry (separate from Staff and User login accounts)
+CREATE TABLE IF NOT EXISTS "RuoOffice" (
+  "id" TEXT NOT NULL,
+  "name" VARCHAR(120) NOT NULL,
+  "region" VARCHAR(120) NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT "RuoOffice_pkey" PRIMARY KEY ("id")
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'RuoOffice_name_key'
+  ) THEN
+    ALTER TABLE "RuoOffice"
+      ADD CONSTRAINT "RuoOffice_name_key"
+      UNIQUE ("name");
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'RuoOffice_region_key'
+  ) THEN
+    ALTER TABLE "RuoOffice"
+      ADD CONSTRAINT "RuoOffice_region_key"
+      UNIQUE ("region");
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS "RuoRepresentative" (
+  "id" TEXT NOT NULL,
+  "firstName" VARCHAR(80) NOT NULL,
+  "middleName" VARCHAR(80),
+  "lastName" VARCHAR(80) NOT NULL,
+  "ruoOfficeId" TEXT NOT NULL,
+  "userId" TEXT,
+  "isActive" BOOLEAN NOT NULL DEFAULT TRUE,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT "RuoRepresentative_pkey" PRIMARY KEY ("id")
+);
+
+CREATE INDEX IF NOT EXISTS "RuoRepresentative_ruoOfficeId_idx"
+  ON "RuoRepresentative"("ruoOfficeId");
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'RuoRepresentative_userId_key'
+  ) THEN
+    ALTER TABLE "RuoRepresentative"
+      ADD CONSTRAINT "RuoRepresentative_userId_key"
+      UNIQUE ("userId");
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'RuoRepresentative_ruoOfficeId_fkey'
+  ) THEN
+    ALTER TABLE "RuoRepresentative"
+      ADD CONSTRAINT "RuoRepresentative_ruoOfficeId_fkey"
+      FOREIGN KEY ("ruoOfficeId") REFERENCES "RuoOffice"("id")
+      ON DELETE RESTRICT
+      ON UPDATE CASCADE;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'RuoRepresentative_userId_fkey'
+  ) THEN
+    ALTER TABLE "RuoRepresentative"
+      ADD CONSTRAINT "RuoRepresentative_userId_fkey"
+      FOREIGN KEY ("userId") REFERENCES "User"("id")
+      ON DELETE SET NULL
+      ON UPDATE CASCADE;
+  END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS "Institution_createdBy_idx"
   ON "Institution"("createdBy");
 

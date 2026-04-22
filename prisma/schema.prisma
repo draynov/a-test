@@ -112,6 +112,7 @@ model User {
   sectionBCommissionMemberships SectionBCommissionMember[]
   createdInstitutions Institution[]
   staffProfile   Staff?
+  ruoRepresentative RuoRepresentative?
   sectionBCommitteeSystemResponses SectionBCommitteeSystemResponse[]
   sectionBCommitteeCustomResponses SectionBCommitteeCustomResponse[]
   createdAt    DateTime                  @default(now())
@@ -133,6 +134,18 @@ model Institution {
   @@index([createdBy])
 }
 
+model RuoOffice {
+  id                 String              @id @default(cuid())
+  name               String              @db.VarChar(120)
+  region             String              @db.VarChar(120)
+  representatives    RuoRepresentative[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([name])
+  @@unique([region])
+}
+
 model Staff {
   id               String               @id @default(cuid())
   firstName        String               @db.VarChar(80)
@@ -152,6 +165,22 @@ model Staff {
   @@unique([identifierType, identifierValue])
   @@index([institutionId])
   @@index([institutionRole])
+}
+
+model RuoRepresentative {
+  id            String     @id @default(cuid())
+  firstName     String     @db.VarChar(80)
+  middleName    String?    @db.VarChar(80)
+  lastName      String     @db.VarChar(80)
+  ruoOfficeId   String
+  ruoOffice     RuoOffice  @relation(fields: [ruoOfficeId], references: [id], onDelete: Restrict)
+  userId        String?    @unique
+  user          User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([ruoOfficeId])
 }
 
 model SectionBSystemQuestion {
