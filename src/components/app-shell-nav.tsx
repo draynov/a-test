@@ -91,6 +91,12 @@ const navItems = [
     icon: BuildingIcon,
   },
   {
+    href: "/app/staff",
+    label: "Staff",
+    startsWith: "/app/staff",
+    icon: UsersIcon,
+  },
+  {
     href: "/app/shabloni",
     label: "Шаблони",
     startsWith: "/app/shabloni",
