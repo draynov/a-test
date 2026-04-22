@@ -141,14 +141,14 @@ model SectionBTemplate {
   id                    String              @id @default(cuid())
   name                  String              @db.VarChar(150)
   cardType              AttestationCardType
-    institutionId         String?
-    institution           Institution?        @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  institutionId         String
+  institution           Institution         @relation(fields: [institutionId], references: [id], onDelete: Restrict)
   customQuestions       SectionBCustomQuestion[]
   attestationCards      AttestationCard[]
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
 
-  @@unique([name, cardType])
+  @@unique([institutionId, name, cardType])
 }
 
 model SectionBCustomQuestion {
