@@ -57,7 +57,45 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 4) Optional cleanup (run later, only if you want to remove old columns)
+-- 4) Seed PSYCHOLOGIST_COUNSELOR system questions (I, II, III)
+INSERT INTO "SectionBSystemQuestion" (
+  "id",
+  "cardType",
+  "sectionRoman",
+  "questionCode",
+  "prompt",
+  "displayOrder",
+  "maxPoints",
+  "createdAt",
+  "updatedAt"
+)
+VALUES
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.1', 'Залага конкретни цели при планирането на дейността.', 1, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.2', 'Планира дейности за обща и допълнителна подкрепа за личностно развитие на децата/учениците.', 2, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.3', 'Планира иновативни методи и подходящ инструментариум за оценка и превенция на обучителни затруднения и за придобиване на социални умения.', 3, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.2.1', 'Проследява напредъка в развитието на децата/учениците с цел постигане на планираните резултати и формираните ключови компетентности.', 4, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.2.2', 'Използва ефективно иновативни и интерактивни методи за индивидуална и групова работа, като формира и развива основни социални умения.', 5, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.2.3', 'Подбира и прилага подходящи методи, средства и дидактически материали за реализиране на поставените цели, включително създадени от самия него.', 6, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.2.4', 'Спазва и контролира спазването на книжовноезиковите норми на българския език. Прилага компетентностния подход в работата си при придобиване на ключови компетентности от децата/учениците съгласно чл. 77, ал. 1 от ЗПУО.', 7, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.3.1', 'Използва подходящи методи и форми за диагностика и консултиране на постигнатите от учениците индивидуални/групови резултати.', 8, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.3.2', 'Проследява и анализира постигнатите резултати, като осигурява обща и/или допълнителна подкрепа за личностно развитие.', 9, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.3.3', 'Информира родителите за постигнатите резултати; дефинира цели и мерки за подкрепа на база индивидуалния напредък на детето или ученика.', 10, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.4.1', 'Ръководи групата или работи индивидуално с дете/ученик в съответствие с етичния кодекс на училищната общност.', 11, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'I', 'I.4.2', 'Осигурява сигурна и подходяща физическа, психологическа и социална среда за подкрепа и развитие на децата и учениците и формира отношения на загриженост и ефективна комуникация между всички участници в образователния процес. Подпомага ученическото самоуправление.', 12, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'II', 'II.1', 'Участва в разработването и изпълнението на стратегията на институцията и спомага за нейното актуализиране.', 13, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'II', 'II.2.1', 'Има изградени ефективни професионални взаимоотношения с участниците в образователния процес в институцията и всички заинтересовани страни, като взема активно участие в работата на педагогическия съвет, екипи и комисии, методически обединения, както и в работа по проекти и програми.', 14, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'II', 'II.2.2', 'Активно участва в организирането и провеждането на извънурочни и извънкласни форми на обучение за обща и допълнителна подкрепа.', 15, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'II', 'II.2.3', 'Взаимодейства активно за приобщаване на родителите в образователния процес и е диалогичен с родителската общност.', 16, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'II', 'II.3', 'Подпомага методически и организационно млади, новоназначени и други учители/възпитатели и/или изпълнява наставнически функции по отношение на стажант-учители.', 17, NULL, now(), now()),
+  (gen_random_uuid()::text, 'PSYCHOLOGIST_COUNSELOR', 'III', 'III.1', 'Познава и прилага нормативната уредба в системата на предучилищното и училищното образование, училищната документация и документите на институцията.', 18, NULL, now(), now())
+ON CONFLICT ("cardType", "questionCode")
+DO UPDATE SET
+  "sectionRoman" = EXCLUDED."sectionRoman",
+  "prompt" = EXCLUDED."prompt",
+  "displayOrder" = EXCLUDED."displayOrder",
+  "updatedAt" = now();
+
+-- 5) Optional cleanup (run later, only if you want to remove old columns)
 -- ALTER TABLE "SectionBTemplate"
 --   DROP COLUMN IF EXISTS "scoreMethodology1",
 --   DROP COLUMN IF EXISTS "scoreMethodology1_5",

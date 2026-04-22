@@ -15,7 +15,7 @@ export const SECTION_B_CARD_TYPE_LABELS: Record<SectionBTemplateCardType, string
   EDUCATOR: "Възпитател",
   DIRECTOR: "Директор",
   DEPUTY_DIRECTOR: "Заместник-директор",
-  PSYCHOLOGIST_COUNSELOR: "Психолог и педагогически съветник",
+  PSYCHOLOGIST_COUNSELOR: "Психолог / П. съветник",
 };
 
 export type SectionBCardTypeOption = {
