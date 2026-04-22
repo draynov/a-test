@@ -117,7 +117,47 @@ DO UPDATE SET
   "displayOrder" = EXCLUDED."displayOrder",
   "updatedAt" = now();
 
--- 6) Optional cleanup (run later, only if you want to remove old columns)
+-- 6) Seed EDUCATOR system questions (I, II, III)
+INSERT INTO "SectionBSystemQuestion" (
+  "id",
+  "cardType",
+  "sectionRoman",
+  "questionCode",
+  "prompt",
+  "displayOrder",
+  "maxPoints",
+  "createdAt",
+  "updatedAt"
+)
+VALUES
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.1', 'Планира и ръководи самоподготовката на учениците, заниманията по интереси в свободното им време, организирания отдих, физическата активност, както и възпитанието, социализацията и подкрепата им.', 1, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.2', 'Планира и прилага подходящи методи, средства и материали при реализиране на възпитателната дейност.', 2, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.3', 'Планира методи и подходи за преодоляване на обучителни затруднения при самоподготовката на учениците и за повишаване на социалните им умения. Прилага компетентностния подход в работата си с учениците съгласно чл. 77, ал. 1 от ЗПУО.', 3, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.2.1', 'Наблюдава и контролира дейностите по самоподготовката на учениците, поддържа позитивна работна атмосфера, с цел постигане на планираните резултати.', 4, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.2.2', 'Използва възможностите на взаимодействие с учителите на учениците и с другите педагогически специалисти.', 5, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.2.3', 'Прилага методи и подходи за преодоляване на обучителни затруднения при самоподготовката на учениците.', 6, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.2.4', 'Спазва и контролира използването на книжовно-езиковите норми на българския език.', 7, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.3.1', 'Използва подходящи методи и средства за постигане на резултати и ключови компетентности от учениците.', 8, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.3.2', 'Осигурява необходимата подкрепа за личностно развитие.', 9, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.3.3', 'Осигурява информация за напредъка на учениците, като запознава родителите им периодично.', 10, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.4.1', 'Ръководи учениците и споделя отговорността за тях в съответствие с етичния кодекс на общността.', 11, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'I', 'I.4.2', 'Възпитава и формира гражданска позиция; окуражава позитивните прояви и взаимната подкрепа.', 12, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'II', 'II.1', 'Участва в разработването на вътрешни документи, правила, програми и проекти.', 13, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'II', 'II.2.1', 'Има ефективна комуникация и положително въздействие върху учениците, като прилага подходящи методи, средства и материали при реализиране на възпитателната дейност.', 14, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'II', 'II.2.2', 'Познава причините, факторите и начините за противодействие на агресивното и антисоциалното поведение.', 15, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'II', 'II.2.3', 'Умее да организира обща и допълнителна подкрепа чрез екипна работа с психолог или педагогически съветник.', 16, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'II', 'II.3', 'Подпомага методически и организационно новоназначени възпитатели.', 17, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'III', 'III.1', 'Оценява професионалното си развитие, както и необходимостта от повишаване на квалификацията си по теми, свързани с пряката работа, и има задължителните квалификационни кредити.', 18, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'III', 'III.2', 'Изпълнява задълженията си съгласно длъжностната характеристика, участва във форми на вътрешноинституционалната квалификация.', 19, NULL, now(), now()),
+  (gen_random_uuid()::text, 'EDUCATOR', 'III', 'III.3', 'Познава и прилага актуалната нормативна уредба за системата на предучилищното и училищното образование, включително и документацията на институцията.', 20, NULL, now(), now())
+ON CONFLICT ("cardType", "questionCode")
+DO UPDATE SET
+  "sectionRoman" = EXCLUDED."sectionRoman",
+  "prompt" = EXCLUDED."prompt",
+  "displayOrder" = EXCLUDED."displayOrder",
+  "updatedAt" = now();
+
+-- 7) Optional cleanup (run later, only if you want to remove old columns)
 -- ALTER TABLE "SectionBTemplate"
 --   DROP COLUMN IF EXISTS "scoreMethodology1",
 --   DROP COLUMN IF EXISTS "scoreMethodology1_5",
