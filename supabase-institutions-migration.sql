@@ -119,3 +119,97 @@ BEGIN
       ON UPDATE CASCADE;
   END IF;
 END $$;
+
+-- 4) Staff registry (separate from User login accounts)
+DO $$
+BEGIN
+  CREATE TYPE "StaffIdentifierType" AS ENUM ('EGN', 'LNCH', 'SERVICE_ID');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  CREATE TYPE "StaffInstitutionRole" AS ENUM ('INSTITUTION_ADMIN', 'STAFF_MEMBER');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS "Staff" (
+  "id" TEXT NOT NULL,
+  "firstName" VARCHAR(80) NOT NULL,
+  "middleName" VARCHAR(80),
+  "lastName" VARCHAR(80) NOT NULL,
+  "identifierType" "StaffIdentifierType" NOT NULL,
+  "identifierValue" VARCHAR(30) NOT NULL,
+  "institutionId" TEXT NOT NULL,
+  "institutionRole" "StaffInstitutionRole" NOT NULL DEFAULT 'STAFF_MEMBER',
+  "userId" TEXT,
+  "isActive" BOOLEAN NOT NULL DEFAULT TRUE,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT "Staff_pkey" PRIMARY KEY ("id")
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'Staff_identifierType_identifierValue_key'
+  ) THEN
+    ALTER TABLE "Staff"
+      ADD CONSTRAINT "Staff_identifierType_identifierValue_key"
+      UNIQUE ("identifierType", "identifierValue");
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'Staff_userId_key'
+  ) THEN
+    ALTER TABLE "Staff"
+      ADD CONSTRAINT "Staff_userId_key"
+      UNIQUE ("userId");
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS "Staff_institutionId_idx"
+  ON "Staff"("institutionId");
+
+CREATE INDEX IF NOT EXISTS "Staff_institutionRole_idx"
+  ON "Staff"("institutionRole");
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'Staff_institutionId_fkey'
+  ) THEN
+    ALTER TABLE "Staff"
+      ADD CONSTRAINT "Staff_institutionId_fkey"
+      FOREIGN KEY ("institutionId") REFERENCES "Institution"("id")
+      ON DELETE RESTRICT
+      ON UPDATE CASCADE;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'Staff_userId_fkey'
+  ) THEN
+    ALTER TABLE "Staff"
+      ADD CONSTRAINT "Staff_userId_fkey"
+      FOREIGN KEY ("userId") REFERENCES "User"("id")
+      ON DELETE SET NULL
+      ON UPDATE CASCADE;
+  END IF;
+END $$;

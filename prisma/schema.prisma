@@ -65,6 +65,17 @@ enum CommissionMemberRole {
   OPTIONAL
 }
 
+enum StaffIdentifierType {
+  EGN
+  LNCH
+  SERVICE_ID
+}
+
+enum StaffInstitutionRole {
+  INSTITUTION_ADMIN
+  STAFF_MEMBER
+}
+
 model AttestationCard {
   id                String                  @id @default(cuid())
   cardType          AttestationCardType     @default(TEACHER)
@@ -99,7 +110,8 @@ model User {
   name         String?
   role         String                    @default("USER")
   sectionBCommissionMemberships SectionBCommissionMember[]
-    createdInstitutions Institution[]
+  createdInstitutions Institution[]
+  staffProfile   Staff?
   sectionBCommitteeSystemResponses SectionBCommitteeSystemResponse[]
   sectionBCommitteeCustomResponses SectionBCommitteeCustomResponse[]
   createdAt    DateTime                  @default(now())
@@ -113,11 +125,33 @@ model Institution {
   municipality    String   @db.VarChar(100)
   createdBy       String?
   user            User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  staffMembers    Staff[]
   templates       SectionBTemplate[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([createdBy])
+}
+
+model Staff {
+  id               String               @id @default(cuid())
+  firstName        String               @db.VarChar(80)
+  middleName       String?              @db.VarChar(80)
+  lastName         String               @db.VarChar(80)
+  identifierType   StaffIdentifierType
+  identifierValue  String               @db.VarChar(30)
+  institutionId    String
+  institution      Institution          @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  institutionRole  StaffInstitutionRole @default(STAFF_MEMBER)
+  userId           String?              @unique
+  user             User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  isActive         Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([identifierType, identifierValue])
+  @@index([institutionId])
+  @@index([institutionRole])
 }
 
 model SectionBSystemQuestion {
